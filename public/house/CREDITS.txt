@@ -1,0 +1,10 @@
+3D assets used in "The Build" scene are from Poly Haven (https://polyhaven.com), released under CC0 (public domain).
+Optimised for the web with glTF-Transform (meshopt geometry, WebP textures).
+
+Models: mid_century_lounge_chair, modern_arm_chair_01, coffee_table_round_01, modern_coffee_table_01,
+modern_wooden_cabinet, modern_ceiling_lamp_01, dining_chair_02, potted_plant_02, potted_plant_04,
+brass_vase_01, ceramic_vase_01, Ottoman_01
+
+Textures: marble_01, herringbone_parquet, beige_wall_001, coral_stone_wall, natural_walnut_veneer,
+grey_oak_veneer_01, poly_wool_herringbone, rough_linen, leather_white, quatrefoil_jacquard_fabric,
+patio_tiles, white_sandstone_blocks_02

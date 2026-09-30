@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Archi Builder — website
 
-## Getting Started
-
-First, run the development server:
+Next.js 16 (App Router) · Tailwind 4 · GSAP + Lenis · three.js / React Three Fiber · react-pageflip. English + Arabic (RTL).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000 → redirects to /en or /ar
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Pages
+| Route | What it is |
+|---|---|
+| `/[lang]` | Home: project slideshow, 1:1 scale-morph manifesto, filmstrip, services, process, book teaser |
+| `/[lang]/build` | The 3D villa that builds itself on scroll (plan → white model → materials), daylight / evening |
+| `/[lang]/projects`, `/[lang]/projects/[slug]` | Filterable index (grid / list) and project pages with gallery lightbox |
+| `/[lang]/book` | The portfolio as a page-turning book, generated from the content |
+| `/[lang]/services`, `/[lang]/studio`, `/[lang]/contact` | Inner pages; the contact form feeds the admin inbox |
+| `/admin` | Site manager: projects, page content (EN/AR), team, messages, settings, backup |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Content & admin
+All pages read content through `useSite` (`src/lib/content/store.ts`). Until Convex is connected, admin edits are saved in the browser (localStorage, ~5 MB — uploaded images are compressed to WebP).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Connecting Convex (next step)
+1. `npm i convex && npx convex dev` (creates the deployment and `convex/_generated`).
+2. Remove `"convex"` from `exclude` in `tsconfig.json`.
+3. Add queries/mutations over `convex/schema.ts` (tables mirror `src/lib/content/types.ts`), seed from `src/lib/content/seed.ts`, and switch `useSite` to `useQuery`/`useMutation`. Add Convex Auth to protect `/admin`, and Convex file storage for uploads.
 
-## Learn More
+## 3D assets
+Models and textures in `public/house/` are CC0 from Poly Haven (see `public/house/CREDITS.txt`), optimised with glTF-Transform (~4 MB total, loaded only on `/build`).
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## To confirm with the client
+Project summaries and scope tags are draft copy written from the portfolio photos; year and area fields are empty until provided. Rana Aref and Asalah Ashgar have no photos in the PDF, so their cards show gold initials.

@@ -1,0 +1,223 @@
+import type { L } from "./i18n";
+
+/** Interface strings. Editable content lives in the content store instead. */
+export const ui = {
+  nav: {
+    home: { en: "Home", ar: "الرئيسية" },
+    projects: { en: "Projects", ar: "المشاريع" },
+    services: { en: "Services", ar: "خدماتنا" },
+    build: { en: "The Build", ar: "مراحل البناء" },
+    book: { en: "The Book", ar: "الكتالوج" },
+    studio: { en: "Studio", ar: "من نحن" },
+    contact: { en: "Contact", ar: "تواصل" },
+  },
+  menu: { en: "Menu", ar: "القائمة" },
+  close: { en: "Close", ar: "إغلاق" },
+  skip: { en: "Skip to content", ar: "تخطَّ إلى المحتوى" },
+  startProject: { en: "Start a project", ar: "ابدأ مشروعك" },
+  tagline: { en: "Design · Build · Deliver", ar: "تصميم · تنفيذ · تسليم" },
+  basedIn: { en: "Design-build studio · Jeddah", ar: "تصميم وتنفيذ · جدة" },
+  scroll: { en: "Scroll", ar: "مرّر" },
+  scaleLabel: { en: "Scale", ar: "المقياس" },
+  pause: { en: "Pause slideshow", ar: "إيقاف العرض" },
+  play: { en: "Play slideshow", ar: "تشغيل العرض" },
+  heroLabel: { en: "Featured projects", ar: "مشاريع مختارة" },
+
+  // Home
+  studioLabel: { en: "The studio", ar: "الاستوديو" },
+  aboutStudio: { en: "About the studio", ar: "عن الاستوديو" },
+  manifestoTop: { en: "Drawn at", ar: "نرسمها بمقياس" },
+  manifestoBottom: { en: "Delivered at", ar: "ونسلّمها بمقياس" },
+  manifestoNote: {
+    en: "Our logo is a scale. Every drawing is made at 1:100 or 1:50. Our job ends when the building stands at 1:1, exactly as drawn.",
+    ar: "شعارنا مقياس رسم. كل مخطط يُرسم بمقياس ١:١٠٠ أو ١:٥٠، وتنتهي مهمتنا حين يقف المبنى بمقياس ١:١ كما رُسم تمامًا.",
+  },
+  facts: [
+    { en: "Projects in the portfolio", ar: "مشروعًا في ملف الأعمال" },
+    { en: "Services under one team", ar: "خدمات بفريق واحد" },
+    { en: "Sectors, homes to cafés", ar: "قطاعات، من المنازل إلى المقاهي" },
+    { en: "Stages, brief to handover", ar: "مراحل، من الفكرة إلى التسليم" },
+  ],
+  buildLabel: { en: "The build", ar: "مراحل البناء" },
+  buildTitle: { en: "A villa that *builds itself.*", ar: "فيلا *تُبنى أمامك.*" },
+  buildBody: {
+    en: "Scroll from the first plan to the finished rooms: a drawing that becomes a white model, then stone, oak and linen. Switch the lamp to see it after dark.",
+    ar: "مرّر من المخطط الأول حتى الغرف المكتملة: رسم يتحول إلى مجسم أبيض، ثم إلى حجر وخشب وكتان. بدّل الإضاءة لتراها ليلًا.",
+  },
+  enterBuild: { en: "Open the model", ar: "افتح المجسم" },
+  buildChips: [
+    { k: { en: "Drawing", ar: "الرسم" }, v: { en: "Plan", ar: "المخطط" } },
+    { k: { en: "Model", ar: "المجسم" }, v: { en: "White clay", ar: "مجسم أبيض" } },
+    { k: { en: "Finish", ar: "التشطيب" }, v: { en: "Materials", ar: "الخامات" } },
+    { k: { en: "Light", ar: "الإضاءة" }, v: { en: "Day & evening", ar: "نهار ومساء" } },
+  ],
+  buildPageBody: {
+    en: "This is how we present a project before anything is ordered: a plan with every dimension, a white model that tests proportion and light, then the finished materials by day and after dark.",
+    ar: "هكذا نعرض المشروع قبل طلب أي شيء: مخطط بكل أبعاده، ومجسم أبيض يختبر النِّسب والضوء، ثم الخامات النهائية نهارًا وليلًا.",
+  },
+  materialsLabel: { en: "Materials in this model", ar: "الخامات في هذا المجسم" },
+  materialsTitle: { en: "Chosen with *samples in the room.*", ar: "نختارها *والعينات في المكان.*" },
+  materials: [
+    { id: "marble_01", name: { en: "Travertine marble", ar: "رخام ترافرتين" }, use: { en: "Floors: majlis, living, kitchen", ar: "الأرضيات: المجلس والمعيشة والمطبخ" } },
+    { id: "coral_stone_wall", name: { en: "Coral stone", ar: "الحجر المنقبي" }, use: { en: "Garden wall, after Jeddah's Al-Balad", ar: "سور الحديقة، على طراز البلد في جدة" } },
+    { id: "natural_walnut_veneer", name: { en: "Walnut veneer", ar: "قشرة خشب الجوز" }, use: { en: "Kitchen run, dining table, joinery", ar: "المطبخ وطاولة الطعام والنجارة" } },
+    { id: "herringbone_parquet", name: { en: "Oak herringbone", ar: "باركيه بلوط متعرج" }, use: { en: "Master bedroom floor", ar: "أرضية غرفة النوم الرئيسية" } },
+    { id: "rough_linen", name: { en: "Natural linen", ar: "كتان طبيعي" }, use: { en: "Majlis seating, bedding", ar: "جلسات المجلس والمفارش" } },
+    { id: "quatrefoil_jacquard_fabric", name: { en: "Jacquard weave", ar: "نسيج جاكار" }, use: { en: "Majlis rug", ar: "سجادة المجلس" } },
+  ],
+  loadingModel: { en: "Building the model", ar: "جارٍ بناء المجسم" },
+  daylight: { en: "Daylight", ar: "نهار" },
+  evening: { en: "Evening", ar: "مساء" },
+  lamp: { en: "Lighting", ar: "الإضاءة" },
+  stage: { en: "Stage", ar: "المرحلة" },
+  workLabel: { en: "Built work", ar: "أعمال منفّذة" },
+  workTitle: { en: "Built, handed over, *in use.*", ar: "نُفّذت وسُلّمت *وتعمل اليوم.*" },
+  workBody: {
+    en: "Restaurants, bakeries, cafés and private homes, delivered in Jeddah and Riyadh.",
+    ar: "مطاعم ومخابز ومقاهٍ ومساكن خاصة، نُفّذت في جدة والرياض.",
+  },
+  allProjects: { en: "All projects", ar: "كل المشاريع" },
+  viewProject: { en: "View project", ar: "عرض المشروع" },
+  servicesLabel: { en: "What we do", ar: "ماذا نقدم" },
+  servicesTitle: { en: "One team, *from shell to handover.*", ar: "فريق واحد، *من الهيكل حتى التسليم.*" },
+  allServices: { en: "All services", ar: "كل الخدمات" },
+  processLabel: { en: "Process", ar: "كيف نعمل" },
+  processTitle: { en: "Six stages, *one line of responsibility.*", ar: "ست مراحل، *ومسؤولية واحدة.*" },
+  bookLabel: { en: "The portfolio", ar: "ملف الأعمال" },
+  bookTitle: { en: "Turn the pages *of the printed book.*", ar: "قلّب صفحات *ملف أعمالنا المطبوع.*" },
+  bookBody: {
+    en: "The portfolio we hand to clients, rebuilt as a book you can open on screen, one project to a spread.",
+    ar: "ملف الأعمال الذي نسلّمه لعملائنا، معاد بناؤه ككتاب تفتحه على الشاشة، مشروع في كل صفحتين.",
+  },
+  openBook: { en: "Open the portfolio", ar: "افتح ملف الأعمال" },
+
+  // Footer / CTA
+  ctaLabel: { en: "Start a project", ar: "ابدأ مشروعك" },
+  ctaTitle: { en: "Have a drawing? *Let's take it to 1:1.*", ar: "لديك مخطط؟ *لنأخذه إلى ١:١.*" },
+  ctaBody: {
+    en: "Tell us about the space, the timeline and the budget. We'll tell you how we'd build it.",
+    ar: "أخبرنا عن المساحة والجدول الزمني والميزانية، وسنخبرك كيف سننفّذها.",
+  },
+  whatsapp: { en: "WhatsApp", ar: "واتساب" },
+  call: { en: "Call", ar: "اتصال" },
+  visit: { en: "Visit", ar: "زيارة" },
+  follow: { en: "Pages", ar: "الصفحات" },
+  rights: { en: "All rights reserved.", ar: "جميع الحقوق محفوظة." },
+  backToTop: { en: "Back to top", ar: "إلى الأعلى" },
+  directions: { en: "Get directions", ar: "الاتجاهات" },
+
+  // Studio
+  vision: { en: "Vision", ar: "رؤيتنا" },
+  mission: { en: "Mission", ar: "رسالتنا" },
+  values: { en: "Values", ar: "قيمنا" },
+  valuesTitle: { en: "What we *hold to.*", ar: "ما *نلتزم به.*" },
+  team: { en: "Team", ar: "الفريق" },
+
+  // Services
+  sectors: { en: "Sectors", ar: "القطاعات" },
+  methodology: { en: "Methodology", ar: "منهجيتنا" },
+
+  // Projects
+  projectsTitle: { en: "Rooms, counters *and courtyards.*", ar: "غرف وكاونترات *وأفنية.*" },
+  projectsBody: {
+    en: "A selection of hospitality, commercial and residential work. Filter by sector or switch to the list.",
+    ar: "مختارات من أعمال الضيافة والتجارية والسكنية. صفِّ حسب القطاع أو اعرضها كقائمة.",
+  },
+  filterAll: { en: "All", ar: "الكل" },
+  sectorNames: {
+    commercial: { en: "Commercial", ar: "تجاري" },
+    hospitality: { en: "Hospitality", ar: "ضيافة" },
+    residential: { en: "Residential", ar: "سكني" },
+  } as Record<string, L>,
+  gridView: { en: "Grid", ar: "شبكة" },
+  listView: { en: "List", ar: "قائمة" },
+  projectsCount: { en: "Projects", ar: "مشاريع" },
+  noProjects: {
+    en: "No projects in this sector yet. Show all projects instead.",
+    ar: "لا توجد مشاريع في هذا القطاع بعد. اعرض كل المشاريع.",
+  },
+  type: { en: "Type", ar: "النوع" },
+  sector: { en: "Sector", ar: "القطاع" },
+  city: { en: "City", ar: "المدينة" },
+  scope: { en: "Scope", ar: "نطاق العمل" },
+  year: { en: "Year", ar: "السنة" },
+  area: { en: "Area", ar: "المساحة" },
+  nextProject: { en: "Next project", ar: "المشروع التالي" },
+  gallery: { en: "Gallery", ar: "المعرض" },
+  closeImage: { en: "Close image", ar: "إغلاق الصورة" },
+  prevImage: { en: "Previous image", ar: "الصورة السابقة" },
+  nextImage: { en: "Next image", ar: "الصورة التالية" },
+
+  // Book
+  bookIntro: {
+    en: "Our printed portfolio, rebuilt for the screen. Drag a corner, tap a page or use the arrow keys.",
+    ar: "ملف أعمالنا المطبوع، معاد بناؤه للشاشة. اسحب زاوية الصفحة أو انقر عليها أو استخدم الأسهم.",
+  },
+  prevPage: { en: "Previous page", ar: "الصفحة السابقة" },
+  nextPage: { en: "Next page", ar: "الصفحة التالية" },
+  sound: { en: "Page sound", ar: "صوت الصفحات" },
+  contents: { en: "Contents", ar: "الفهرس" },
+  page: { en: "Page", ar: "صفحة" },
+  fullscreen: { en: "Full screen", ar: "ملء الشاشة" },
+
+  // Contact
+  contactTitle: { en: "Every project starts *with a conversation.*", ar: "كل مشروع يبدأ *بمحادثة.*" },
+  contactIntro: {
+    en: "Villa, café, office or a full fit-out: send the essentials and the team will get back to you.",
+    ar: "فيلا أو مقهى أو مكتب أو تشطيب كامل: أرسل لنا الأساسيات وسيتواصل معك الفريق.",
+  },
+  form: {
+    name: { en: "Full name", ar: "الاسم الكامل" },
+    phone: { en: "Phone", ar: "رقم الجوال" },
+    email: { en: "Email (optional)", ar: "البريد الإلكتروني (اختياري)" },
+    type: { en: "Project type", ar: "نوع المشروع" },
+    message: { en: "About the project", ar: "عن المشروع" },
+    messageHelp: {
+      en: "Location, size, timeline and anything already drawn.",
+      ar: "الموقع والمساحة والجدول الزمني وأي مخططات جاهزة.",
+    },
+    send: { en: "Send message", ar: "أرسل الرسالة" },
+    sending: { en: "Sending…", ar: "جارٍ الإرسال…" },
+    sent: { en: "Message sent", ar: "تم إرسال الرسالة" },
+    sentBody: {
+      en: "Thank you. The team will be in touch using the details you gave.",
+      ar: "شكرًا لك. سيتواصل معك الفريق عبر البيانات التي أرسلتها.",
+    },
+    another: { en: "Send another message", ar: "أرسل رسالة أخرى" },
+    errName: { en: "Enter your name so we know who to ask for.", ar: "أدخل اسمك لنعرف بمن نتصل." },
+    errPhone: { en: "Enter a phone number with at least 9 digits.", ar: "أدخل رقم جوال من ٩ أرقام على الأقل." },
+    errEmail: {
+      en: "Check the email address format, e.g. name@company.com.",
+      ar: "تحقق من صيغة البريد، مثل name@company.com.",
+    },
+    errMessage: {
+      en: "Add a few words about the project (at least 10 characters).",
+      ar: "أضف بضع كلمات عن المشروع (١٠ أحرف على الأقل).",
+    },
+    types: [
+      { en: "Villa / residence", ar: "فيلا / مسكن" },
+      { en: "Café / restaurant", ar: "مقهى / مطعم" },
+      { en: "Retail / office", ar: "محل / مكتب" },
+      { en: "Fit-out only", ar: "تشطيبات فقط" },
+      { en: "Renovation", ar: "تجديد" },
+    ],
+  },
+  address: { en: "Studio", ar: "المقر" },
+  phones: { en: "Phone", ar: "الهاتف" },
+  hours: { en: "Hours", ar: "ساعات العمل" },
+
+  notFound: { en: "This page *isn't on the drawings.*", ar: "هذه الصفحة *ليست ضمن المخططات.*" },
+  notFoundBody: { en: "It may have moved. Head back home or browse the projects.", ar: "ربما نُقلت. عد إلى الرئيسية أو تصفح المشاريع." },
+  goHome: { en: "Back to home", ar: "العودة للرئيسية" },
+} as const;
+
+export type NavKey = keyof typeof ui.nav;
+
+export const navItems: { key: NavKey; path: string; image: string }[] = [
+  { key: "projects", path: "/projects", image: "/images/projects/kabana-0.jpg" },
+  { key: "services", path: "/services", image: "/images/site/process-hall.jpg" },
+  { key: "build", path: "/build", image: "/images/site/drawings.jpg" },
+  { key: "book", path: "/book", image: "/images/site/living-hall.jpg" },
+  { key: "studio", path: "/studio", image: "/images/site/vision-dining.jpg" },
+  { key: "contact", path: "/contact", image: "/images/site/villa-dusk.jpg" },
+];
