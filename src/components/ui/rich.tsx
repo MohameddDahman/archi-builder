@@ -26,3 +26,10 @@ export function Rich({ text }: { text: string }) {
 
 /** Strips the markup for plain-text contexts (aria-labels, metadata). */
 export const plain = (text: string) => text.replace(/\*/g, "").replace(/\n/g, " ");
+
+/** Longer copy is edited as paragraphs separated by a blank line. */
+export const paragraphs = (text: string) =>
+  text
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);

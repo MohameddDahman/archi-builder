@@ -7,7 +7,7 @@ import { useLocale } from "@/components/providers/locale";
 import { useSite } from "@/lib/content/store";
 import { ui } from "@/lib/dict";
 import { PageHero } from "@/components/ui/page-hero";
-import { Rich } from "@/components/ui/rich";
+import { Rich, paragraphs } from "@/components/ui/rich";
 import { FrameImage, Reveal, RevealText } from "@/components/ui/motion";
 import { Axis } from "@/components/ui/primitives";
 import type { TeamMember } from "@/lib/content/types";
@@ -66,8 +66,12 @@ function VisionMission() {
             <RevealText as="h2" className="statement max-w-[16ch] text-balance">
               <Rich text={t(b.title)} />
             </RevealText>
-            <Reveal>
-              <p className="lead max-w-lg text-taupe">{t(b.body)}</p>
+            <Reveal className="flex max-w-lg flex-col gap-5">
+              {paragraphs(t(b.body)).map((p, j) => (
+                <p key={j} className={j === 0 ? "lead text-taupe" : "text-taupe"}>
+                  {p}
+                </p>
+              ))}
             </Reveal>
           </div>
         </div>

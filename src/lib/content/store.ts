@@ -66,11 +66,12 @@ export const useSite = create<SiteStore>()(
     }),
     {
       name: "archi-builder-site",
-      version: 3,
+      version: 4,
       migrate: (persisted, version) => {
         const old = persisted as Partial<SiteData> | undefined;
-        // v3 introduced the redesign copy; keep only inbound messages from older data.
-        if (version < 3) return { ...seed, messages: old?.messages ?? [] };
+        // v3 brought the redesign copy, v4 the Portfolio R4 content. A browser that saved
+        // an older copy starts again from the seed, keeping only its inbound messages.
+        if (version < 4) return { ...seed, messages: old?.messages ?? [] };
         return persisted as SiteData;
       },
       storage: createJSONStorage(() => ({

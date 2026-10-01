@@ -173,8 +173,11 @@ function BackSheet({ c }: { c: BookCtx }) {
 }
 
 function ContentsSheet({ page, side, c }: { page: Extract<BookPage, { kind: "contents" }>; side: Side; c: BookCtx }) {
-  // Seven or more projects set a little tighter, so the list never runs into the folio.
-  const tight = page.entries.length > 6;
+  // The longer the list, the tighter it is set, so it never runs into the folio:
+  // from eight projects on, each one's sector and city move up beside its name.
+  const count = page.entries.length;
+  const dense = count > 7;
+  const tight = count > 6;
   return (
     <Paper>
       <div className="flex h-full flex-col px-[9cqw] pb-[12cqw] pt-[11cqw]">
@@ -186,17 +189,22 @@ function ContentsSheet({ page, side, c }: { page: Extract<BookPage, { kind: "con
               <>
                 <span className={clsx("bk-mono", BRONZE, T.micro)}>{figure(c, entry.number, 2)}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="bk-serif block text-[clamp(0.95rem,4cqw,1.35rem)] leading-tight transition-colors group-hover:text-[#7a5a12]">
+                  <span
+                    className={clsx(
+                      "bk-serif leading-tight transition-colors group-hover:text-[#7a5a12]",
+                      dense ? "text-[clamp(0.9rem,3.6cqw,1.2rem)]" : "block text-[clamp(0.95rem,4cqw,1.35rem)]",
+                    )}
+                  >
                     {projectName(entry.project, c.lang)}
                   </span>
-                  <span className={clsx("bk-mono mt-[0.9cqw] block text-black/50 @max-sm:hidden", T.micro)}>
+                  <span className={clsx("bk-mono text-black/50 @max-sm:hidden", dense ? "ms-[2cqw]" : "mt-[0.9cqw] block", T.micro)}>
                     {c.t(ui.sectorNames[entry.project.sector])} · {c.t(entry.project.city)}
                   </span>
                 </span>
                 <span className={clsx("bk-mono", T.micro)}>{figure(c, entry.folio)}</span>
               </>
             );
-            const cls = clsx("flex w-full items-baseline gap-[2.5cqw] text-start", tight ? "py-[1.75cqw]" : "py-[2.4cqw]");
+            const cls = clsx("flex w-full items-baseline gap-[2.5cqw] text-start", dense ? "py-[1.5cqw]" : tight ? "py-[1.75cqw]" : "py-[2.4cqw]");
             return (
               <li key={entry.number} className="border-b border-black/15">
                 {c.go ? (

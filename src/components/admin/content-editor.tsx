@@ -103,13 +103,13 @@ export function ContentEditor() {
           </div>
         </Card>
 
-        <Card title="Vision & mission">
+        <Card title="Vision & mission" description="Leave a blank line between paragraphs.">
           <div id="vision" className="flex scroll-mt-24 flex-col gap-6">
             {(["vision", "mission"] as const).map((k) => (
               <div key={k} className="flex flex-col gap-4 border-t border-white/10 pt-4 first:border-0 first:pt-0">
                 <p className="text-sm font-semibold capitalize">{k}</p>
                 <Bilingual label="Title" value={c[k].title} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], title: v } }))} multiline rows={2} />
-                <Bilingual label="Text" value={c[k].body} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], body: v } }))} multiline rows={4} />
+                <Bilingual label="Text" value={c[k].body} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], body: v } }))} multiline rows={10} />
                 <ImageInput label="Image" value={c[k].image} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], image: v } }))} />
               </div>
             ))}
@@ -212,14 +212,14 @@ export function ContentEditor() {
           </div>
         </Card>
 
-        <Card title="Method & quality">
+        <Card title="Method & quality" description="Leave a blank line between paragraphs. On the services page the method's first paragraph opens the page and the rest follow it.">
           <div id="chapters" className="flex scroll-mt-24 flex-col gap-6">
             {(["methodology", "execution", "quality"] as const).map((k) => (
               <div key={k} className="flex flex-col gap-4 border-t border-white/10 pt-4 first:border-0 first:pt-0">
                 <p className="text-sm font-semibold capitalize">{k}</p>
                 <Bilingual label="Label" value={c[k].kicker} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], kicker: v } }))} />
                 <Bilingual label="Title" value={c[k].title} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], title: v } }))} multiline rows={2} />
-                <Bilingual label="Text" value={c[k].body} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], body: v } }))} multiline rows={4} />
+                <Bilingual label="Text" value={c[k].body} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], body: v } }))} multiline rows={10} />
                 <ImageInput label="Image" value={c[k].image} onChange={(v) => up((d) => ({ ...d, [k]: { ...d[k], image: v } }))} />
               </div>
             ))}

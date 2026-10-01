@@ -40,4 +40,9 @@ The script also writes the page counts and sizes shown on the page (`src/lib/boo
 Models and textures in `public/house/` are CC0 from Poly Haven (see `public/house/CREDITS.txt`), optimised with glTF-Transform (~4 MB total, loaded only on `/build`).
 
 ## To confirm with the client
-Project summaries and scope tags are draft copy written from the portfolio photos; year and area fields are empty until provided, and so are the optional "Materials and finishes" lists (shown under each project's detail photographs in the book). Rana Aref and Asalah Ashgar have no photos in the PDF, so their cards show gold initials.
+Content follows Portfolio R4 (nine projects, sector, location and scope per project, the expanded mission, method, execution and quality copy, and all three team portraits). Still to confirm:
+
+- Project descriptions are draft copy written from the photographs; year, area and the optional "Materials and finishes" lists are empty until provided.
+- R4 spells the apartment "ABDUALLAH'S APT"; the site uses "Abdullah's Apartment" (شقة عبدالله).
+- R4 gives "Restaurant & Lounge" as the sector for every food and drink project, including Bread Ahead (a bakery and school in R2) and DumDum Donuts; the site shows it as each project's type.
+- The English versions of the Arabic-only copy are our translations.

@@ -8,7 +8,7 @@ import { useLenis } from "@/components/providers/smooth-scroll";
 import { useSite } from "@/lib/content/store";
 import { ui } from "@/lib/dict";
 import { PageHero } from "@/components/ui/page-hero";
-import { Rich } from "@/components/ui/rich";
+import { Rich, paragraphs } from "@/components/ui/rich";
 import { FrameImage, Reveal, RevealText } from "@/components/ui/motion";
 import { Axis } from "@/components/ui/primitives";
 import { Process } from "@/components/home/sections";
@@ -18,12 +18,39 @@ export function ServicesPage() {
   const c = useSite((s) => s.content);
   return (
     <>
-      <PageHero index="02" name={t(ui.nav.services)} title={t(c.methodology.title)} lead={t(c.methodology.body)} image="/images/site/process-hall.jpg" />
+      <PageHero index="02" name={t(ui.nav.services)} title={t(c.methodology.title)} lead={paragraphs(t(c.methodology.body))[0]} image="/images/site/process-hall.jpg" />
+      <Method />
       <ServiceChapters />
       <Sectors />
-      <Process letter="C" />
+      <Process letter="D" />
       <Chapters />
     </>
+  );
+}
+
+/** The rest of the method, after the opening paragraph the hero carries. */
+function Method() {
+  const { t } = useLocale();
+  const methodology = useSite((s) => s.content.methodology);
+  const rest = paragraphs(t(methodology.body)).slice(1);
+  if (!rest.length) return null;
+  return (
+    <section className="px-[var(--gutter)] pt-[var(--bay)]">
+      <div className="grid gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <Axis letter="A" className="text-ochre lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
+            {t(methodology.kicker)}
+          </Axis>
+        </div>
+        <div className="flex flex-col gap-10 lg:col-span-7 lg:col-start-6">
+          {rest.map((p, i) => (
+            <RevealText key={i} as="p" className="statement-sm text-gypsum/90">
+              {p}
+            </RevealText>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -61,7 +88,7 @@ function ServiceChapters() {
       <div className="grid gap-12 lg:grid-cols-12">
         <nav className="hidden lg:col-span-3 lg:block" aria-label={t(ui.servicesLabel)}>
           <div className="sticky top-[calc(var(--header-h)+2rem)]">
-            <Axis letter="A" className="mb-8 text-ochre">
+            <Axis letter="B" className="mb-8 text-ochre">
               {t(ui.servicesLabel)}
             </Axis>
             <ol className="flex flex-col">
@@ -124,7 +151,7 @@ function Sectors() {
     <section className="on-light px-[var(--gutter)] py-[var(--bay)]">
       <div className="mb-16 grid gap-10 lg:grid-cols-12 lg:items-end">
         <div className="lg:col-span-7">
-          <Axis letter="B" className="mb-8 text-ochre">
+          <Axis letter="C" className="mb-8 text-ochre">
             {t(ui.sectors)}
           </Axis>
           <RevealText as="h2" className="mega mega-lg">
@@ -186,14 +213,18 @@ function Chapters() {
           <FrameImage src={execution.image} alt="" fill sizes="(min-width:1024px) 50vw, 100vw" className="chamfer chamfer-lg aspect-[4/5]" />
         </div>
         <div className="lg:col-span-5 lg:col-start-8">
-          <Axis letter="D" className="mb-8 text-ochre">
+          <Axis letter="E" className="mb-8 text-ochre">
             {t(execution.kicker)}
           </Axis>
           <RevealText as="h2" className="statement">
             <Rich text={t(execution.title)} />
           </RevealText>
-          <Reveal>
-            <p className="lead mt-8 text-gypsum/70">{t(execution.body)}</p>
+          <Reveal className="mt-8 flex flex-col gap-5">
+            {paragraphs(t(execution.body)).map((p, i) => (
+              <p key={i} className={i === 0 ? "lead text-gypsum/75" : "text-gypsum/65"}>
+                {p}
+              </p>
+            ))}
           </Reveal>
         </div>
       </div>
@@ -202,13 +233,19 @@ function Chapters() {
           <Image src={quality.image} alt="" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
         </div>
         <div className="flex flex-col justify-center gap-8 px-[var(--gutter)] py-24 lg:px-[6vw]">
-          <Axis letter="E" className="text-ochre">
+          <Axis letter="F" className="text-ochre">
             {t(quality.kicker)}
           </Axis>
           <RevealText as="h2" className="statement max-w-[14ch]">
             <Rich text={t(quality.title)} />
           </RevealText>
-          <p className="text-gypsum/75">{t(quality.body)}</p>
+          <div className="flex flex-col gap-5">
+            {paragraphs(t(quality.body)).map((p, i) => (
+              <p key={i} className={i === 0 ? "lead text-gypsum/75" : "text-gypsum/65"}>
+                {p}
+              </p>
+            ))}
+          </div>
           <Reveal as="ul" className="grid gap-x-8 gap-y-4 sm:grid-cols-2" stagger={0.07}>
             {quality.points.map((p, i) => (
               <li key={i} className="flex items-start gap-3 border-t border-white/15 pt-4">
