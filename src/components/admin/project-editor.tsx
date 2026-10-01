@@ -7,7 +7,8 @@ import { ArrowLeft, FloppyDisk, Trash, Eye } from "@phosphor-icons/react";
 import { useSite, newId } from "@/lib/content/store";
 import type { Project, Sector } from "@/lib/content/types";
 import type { L } from "@/lib/i18n";
-import { Bilingual, Button, Card, Confirm, ListEditor, PageTitle, Select, TextInput, Toggle, useToast, useUnsavedGuard } from "./ui";
+import { errorText } from "@/lib/admin/session";
+import { Bilingual, Button, Card, Confirm, ListEditor, PageTitle, SaveBar, Select, TextInput, Toggle, useToast, useUnsavedGuard } from "./ui";
 import { GalleryInput, ImageInput } from "./image-input";
 
 const blank = (order: number): Project => ({
@@ -52,6 +53,7 @@ export function ProjectEditor({ id }: { id: string }) {
   const initial = useMemo(() => existing ?? blank(projects.length + 1), [existing, projects.length]);
   const [p, setP] = useState<Project>(initial);
   const [dirty, setDirty] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   useUnsavedGuard(dirty);
@@ -88,22 +90,30 @@ export function ProjectEditor({ id }: { id: string }) {
     return Object.keys(e).length === 0;
   };
 
-  const save = () => {
+  const save = async () => {
+    if (busy) return;
     if (!validate()) {
       toast("Fix the highlighted fields, then save again.", "warn");
       return;
     }
     const final = { ...p, slug: p.slug || slugify(p.name), gallery: p.gallery.length ? p.gallery : [p.cover] };
-    saveProject(final);
-    setP(final);
-    setDirty(false);
-    toast(`Saved ${final.name}${final.published ? "" : " as a draft"}`);
-    if (isNew) router.replace(`/admin/projects/${final.id}`);
+    setBusy(true);
+    try {
+      await saveProject(final);
+      setP(final);
+      setDirty(false);
+      toast(`Saved ${final.name}${final.published ? "" : " as a draft"}`);
+      if (isNew) router.replace(`/admin/projects/${final.id}`);
+    } catch (e) {
+      toast(errorText(e), "warn");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <>
-      <Link href="/admin/projects" className="mb-4 inline-flex items-center gap-2 text-sm text-mist hover:text-gypsum">
+      <Link href="/admin/projects" className="mb-2 inline-flex min-h-10 items-center gap-2 text-sm text-mist hover:text-gypsum">
         <ArrowLeft size={14} /> All projects
       </Link>
       <PageTitle
@@ -121,8 +131,8 @@ export function ProjectEditor({ id }: { id: string }) {
                 Delete
               </Button>
             )}
-            <Button tone="primary" icon={<FloppyDisk size={16} />} onClick={save}>
-              {isNew ? "Create project" : "Save changes"}
+            <Button tone="primary" icon={<FloppyDisk size={16} />} onClick={save} disabled={busy}>
+              {busy ? "Saving…" : isNew ? "Create project" : "Save changes"}
             </Button>
           </>
         }
@@ -137,7 +147,7 @@ export function ProjectEditor({ id }: { id: string }) {
                 <TextInput label="Name · العربية" dir="rtl" value={p.nameAr} onChange={(v) => up("nameAr", v)} />
               </div>
               <Bilingual label="Type" value={p.type} onChange={(v) => up("type", v)} help="For example: Restaurant & lounge" />
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <Select<Sector>
                   label="Sector"
                   value={p.sector}
@@ -218,16 +228,22 @@ export function ProjectEditor({ id }: { id: string }) {
         </div>
       </div>
 
+      <SaveBar show={dirty} busy={busy} onSave={save} label={isNew ? "Create project" : "Save changes"} />
+
       <Confirm
         open={confirm}
         title={`Delete ${p.name || "this project"}?`}
         body="It will disappear from the site and the portfolio book. This can't be undone."
         confirmLabel="Delete project"
-        onConfirm={() => {
-          deleteProject(p.id);
-          setDirty(false);
-          toast(`Deleted ${p.name}`);
-          router.push("/admin/projects");
+        onConfirm={async () => {
+          try {
+            await deleteProject(p.id);
+            setDirty(false);
+            toast(`Deleted ${p.name}`);
+            router.push("/admin/projects");
+          } catch (e) {
+            toast(errorText(e), "warn");
+          }
         }}
         onClose={() => setConfirm(false)}
       />

@@ -1,26 +1,37 @@
 "use client";
 
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
+import { convex } from "@/lib/convex";
+import { adminMutation, republish } from "@/lib/admin/session";
 import { seed } from "./seed";
 import type { Message, Project, SiteContent, SiteData, Settings, TeamMember } from "./types";
 
 /**
- * Local content store. Mirrors the Convex tables in /convex so the swap is a
- * data-source change only: every page reads through `useSite`.
+ * What the site shows, held in memory. The public pages fill it from Convex
+ * (server render, then live updates); the site manager fills it with drafts and
+ * the inbox, and every edit is written to Convex. Edits show at once and are
+ * rolled back if the save fails.
  */
+type Snapshot = Pick<SiteData, "content" | "projects" | "team" | "settings">;
+
 type Actions = {
-  setContent: (fn: (c: SiteContent) => SiteContent) => void;
-  saveProject: (p: Project) => void;
-  deleteProject: (id: string) => void;
-  reorderProjects: (ids: string[]) => void;
-  saveMember: (m: TeamMember) => void;
-  deleteMember: (id: string) => void;
-  setSettings: (s: Settings) => void;
-  addMessage: (m: Omit<Message, "id" | "createdAt" | "read">) => void;
-  setMessageRead: (id: string, read: boolean) => void;
-  deleteMessage: (id: string) => void;
-  resetAll: () => void;
+  /** Take what the server holds (first render, or a live update). */
+  load: (data: Partial<SiteData>) => void;
+  setContent: (fn: (c: SiteContent) => SiteContent) => Promise<void>;
+  saveProject: (p: Project) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
+  reorderProjects: (ids: string[]) => Promise<void>;
+  saveTeam: (team: TeamMember[]) => Promise<void>;
+  deleteMember: (id: string) => Promise<void>;
+  setSettings: (s: Settings) => Promise<void>;
+  addMessage: (m: Omit<Message, "id" | "createdAt" | "read">) => Promise<void>;
+  setMessageRead: (id: string, read: boolean) => Promise<void>;
+  deleteMessage: (id: string) => Promise<void>;
+  restore: (data: Snapshot) => Promise<void>;
+  resetAll: () => Promise<void>;
+  /** The site manager's data has arrived from the server. */
   hydrated: boolean;
 };
 
@@ -28,89 +39,66 @@ export type SiteStore = SiteData & Actions;
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
-export const useSite = create<SiteStore>()(
-  persist(
-    (set) => ({
-      ...seed,
-      hydrated: false,
-      setContent: (fn) => set((s) => ({ content: fn(s.content) })),
-      saveProject: (p) =>
-        set((s) => {
-          const exists = s.projects.some((x) => x.id === p.id);
-          return {
-            projects: exists
-              ? s.projects.map((x) => (x.id === p.id ? p : x))
-              : [...s.projects, p],
-          };
-        }),
-      deleteProject: (id) => set((s) => ({ projects: s.projects.filter((p) => p.id !== id) })),
-      reorderProjects: (ids) =>
-        set((s) => ({
-          projects: s.projects.map((p) => ({ ...p, order: ids.indexOf(p.id) + 1 })),
-        })),
-      saveMember: (m) =>
-        set((s) => {
-          const exists = s.team.some((x) => x.id === m.id);
-          return { team: exists ? s.team.map((x) => (x.id === m.id ? m : x)) : [...s.team, m] };
-        }),
-      deleteMember: (id) => set((s) => ({ team: s.team.filter((m) => m.id !== id) })),
-      setSettings: (settings) => set({ settings }),
-      addMessage: (m) =>
-        set((s) => ({
-          messages: [{ ...m, id: uid(), createdAt: Date.now(), read: false }, ...s.messages],
-        })),
-      setMessageRead: (id, read) =>
-        set((s) => ({ messages: s.messages.map((m) => (m.id === id ? { ...m, read } : m)) })),
-      deleteMessage: (id) => set((s) => ({ messages: s.messages.filter((m) => m.id !== id) })),
-      resetAll: () => set({ ...seed }),
-    }),
-    {
-      name: "archi-builder-site",
-      version: 4,
-      migrate: (persisted, version) => {
-        const old = persisted as Partial<SiteData> | undefined;
-        // v3 brought the redesign copy, v4 the Portfolio R4 content. A browser that saved
-        // an older copy starts again from the seed, keeping only its inbound messages.
-        if (version < 4) return { ...seed, messages: old?.messages ?? [] };
-        return persisted as SiteData;
-      },
-      storage: createJSONStorage(() => ({
-        getItem: (k) => localStorage.getItem(k),
-        removeItem: (k) => localStorage.removeItem(k),
-        setItem: (k, v) => {
-          try {
-            localStorage.setItem(k, v);
-          } catch {
-            // Browser storage is ~5 MB; uploaded images fill it fast until Convex storage is connected.
-            window.dispatchEvent(new CustomEvent("ab:storage-full"));
-          }
-        },
-      })),
-      skipHydration: true,
-      partialize: ({ content, projects, team, settings, messages }) => ({
-        content,
-        projects,
-        team,
-        settings,
-        messages,
-      }),
-      onRehydrateStorage: () => () => {
-        useSite.setState({ hydrated: true });
-      },
+export const useSite = create<SiteStore>()((set, get) => {
+  /** Apply an edit locally, write it to Convex, and undo it locally if the write fails. */
+  const edit = async (change: Partial<SiteData>, write: () => Promise<unknown>) => {
+    const before = get();
+    const undo: Partial<SiteData> = {};
+    for (const key of Object.keys(change) as (keyof SiteData)[]) (undo as Record<string, unknown>)[key] = before[key];
+    set(change);
+    try {
+      await write();
+      republish();
+    } catch (error) {
+      set(undo);
+      throw error;
+    }
+  };
+
+  return {
+    ...seed,
+    hydrated: false,
+    load: (data) => set(data),
+
+    setContent: (fn) => {
+      const content = fn(get().content);
+      return edit({ content }, () => adminMutation(api.admin.saveContent, { content }));
     },
-  ),
-);
+    saveProject: (p) => {
+      const projects = get().projects.some((x) => x.id === p.id) ? get().projects.map((x) => (x.id === p.id ? p : x)) : [...get().projects, p];
+      return edit({ projects }, () => adminMutation(api.admin.saveProject, { project: p }));
+    },
+    deleteProject: (id) => edit({ projects: get().projects.filter((p) => p.id !== id) }, () => adminMutation(api.admin.deleteProject, { id })),
+    reorderProjects: (ids) =>
+      edit({ projects: get().projects.map((p) => ({ ...p, order: ids.indexOf(p.id) + 1 })) }, () => adminMutation(api.admin.reorderProjects, { ids })),
+    saveTeam: (team) => {
+      const ordered = team.map((m, i) => ({ ...m, order: i + 1 }));
+      return edit({ team: ordered }, () => adminMutation(api.admin.saveTeam, { team: ordered }));
+    },
+    deleteMember: (id) => edit({ team: get().team.filter((m) => m.id !== id) }, () => adminMutation(api.admin.deleteMember, { id })),
+    setSettings: (settings) => edit({ settings }, () => adminMutation(api.admin.saveSettings, { settings })),
+
+    addMessage: async (m) => {
+      if (!convex) throw new Error("offline");
+      await convex.mutation(api.messages.send, m);
+    },
+    setMessageRead: (id, read) =>
+      edit({ messages: get().messages.map((m) => (m.id === id ? { ...m, read } : m)) }, () =>
+        adminMutation(api.admin.setMessageRead, { id: id as Id<"messages">, read }),
+      ),
+    deleteMessage: (id) =>
+      edit({ messages: get().messages.filter((m) => m.id !== id) }, () => adminMutation(api.admin.deleteMessage, { id: id as Id<"messages"> })),
+
+    restore: (data) => edit(data, () => adminMutation(api.admin.restore, { data })),
+    resetAll: () =>
+      edit(
+        { content: seed.content, projects: seed.projects, team: seed.team, settings: seed.settings },
+        () => adminMutation(api.admin.resetToLaunch, {}),
+      ),
+  };
+});
 
 export const newId = (prefix: string) => `${prefix}-${uid()}`;
-
-/** Approximate bytes used by the saved site in browser storage. */
-export const storageUsed = () => {
-  try {
-    return (localStorage.getItem("archi-builder-site")?.length ?? 0) * 2;
-  } catch {
-    return 0;
-  }
-};
 
 export const publishedProjects = (projects: Project[]) =>
   projects.filter((p) => p.published).sort((a, b) => a.order - b.order);

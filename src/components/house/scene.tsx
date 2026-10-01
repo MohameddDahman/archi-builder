@@ -657,7 +657,7 @@ export default function HouseScene({
       orthographic
       frameloop="demand"
       dpr={high ? [1, 1.75] : [1, 1.25]}
-      shadows={high ? "soft" : false}
+      shadows={high ? "percentage" : false}
       camera={{ position: [0, 90, 0.01], zoom: 20, near: 1, far: 400 }}
       gl={{ antialias: !high, powerPreference: "high-performance", alpha: false, stencil: false }}
       onCreated={({ gl }) => {

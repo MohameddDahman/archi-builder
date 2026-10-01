@@ -111,7 +111,8 @@ export function Hero() {
     const el = root.current;
     if (!el || prefersReducedMotion()) return;
     const tl = gsap.timeline();
-    tl.fromTo("[data-frame]", { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.6, ease: "expo.inOut" }, 0.1)
+    // Scoped to the hero: the manifesto below has its own [data-frame], driven by scroll.
+    tl.fromTo(el.querySelector("[data-frame]"), { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.6, ease: "expo.inOut" }, 0.1)
       .fromTo(el.querySelector(`[data-slide="0"] img`), { scale: 1.35 }, { scale: 1.06, duration: 2.4, ease: "expo.out" }, 0.1)
       .fromTo(el.querySelectorAll("[data-line]"), { yPercent: 105 }, { yPercent: 0, duration: 1.3, ease: "power4.out", stagger: 0.09 }, 0.35)
       .fromTo(el.querySelectorAll("[data-fade]"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.07 }, 0.8);
@@ -219,7 +220,7 @@ export function Hero() {
               <ol className="flex flex-1 gap-1.5">
                 {slides.map((s, i) => (
                   <li key={s.id} className="flex-1">
-                    <button type="button" onClick={() => go(i)} aria-label={s.name} aria-current={i === index} className="block w-full py-2.5">
+                    <button type="button" onClick={() => go(i)} aria-label={s.name} aria-current={i === index} className="block w-full py-3">
                       <span className="block h-[2px] w-full overflow-hidden bg-white/15">
                         <span
                           key={`${index}-${paused}-${started}`}

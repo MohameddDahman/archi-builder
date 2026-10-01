@@ -5,7 +5,8 @@ import { FloppyDisk, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { useSite } from "@/lib/content/store";
 import type { SiteContent, Service, SectorBlock, TitledText, Value } from "@/lib/content/types";
 import type { L } from "@/lib/i18n";
-import { Bilingual, Button, Card, ListEditor, PageTitle, useToast, useUnsavedGuard } from "./ui";
+import { errorText } from "@/lib/admin/session";
+import { Bilingual, Button, Card, ListEditor, PageTitle, SaveBar, useToast, useUnsavedGuard } from "./ui";
 import { ImageInput } from "./image-input";
 
 const sections = [
@@ -30,6 +31,7 @@ export function ContentEditor() {
   const setContent = useSite((s) => s.setContent);
   const [c, setC] = useState<SiteContent>(content);
   const [dirty, setDirty] = useState(false);
+  const [busy, setBusy] = useState(false);
   useUnsavedGuard(dirty);
 
   useEffect(() => {
@@ -42,10 +44,18 @@ export function ContentEditor() {
     setDirty(true);
   };
 
-  const save = () => {
-    setContent(() => c);
-    setDirty(false);
-    toast("Page content saved");
+  const save = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await setContent(() => c);
+      setDirty(false);
+      toast("Page content saved");
+    } catch (e) {
+      toast(errorText(e), "warn");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -58,14 +68,14 @@ export function ContentEditor() {
             <Button icon={<ArrowCounterClockwise size={16} />} disabled={!dirty} onClick={() => { setC(content); setDirty(false); }}>
               Discard changes
             </Button>
-            <Button tone="primary" icon={<FloppyDisk size={16} />} disabled={!dirty} onClick={save}>
-              Save changes
+            <Button tone="primary" icon={<FloppyDisk size={16} />} disabled={!dirty || busy} onClick={save}>
+              {busy ? "Saving…" : "Save changes"}
             </Button>
           </>
         }
       />
 
-      <nav aria-label="Sections" className="no-scrollbar sticky top-0 z-10 -mx-5 mb-6 flex gap-1 overflow-x-auto border-b border-white/10 bg-deep/95 px-5 py-2 backdrop-blur md:-mx-10 md:px-10">
+      <nav aria-label="Sections" className="no-scrollbar sticky top-14 z-10 -mx-4 mb-6 flex gap-1 overflow-x-auto border-b border-white/10 bg-deep/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 md:-mx-10 md:px-10 lg:top-0">
         {sections.map(([id, label]) => (
           <a key={id} href={`#${id}`} className="shrink-0 px-3 py-2 text-sm text-gypsum/70 hover:text-ochre">
             {label}
@@ -75,7 +85,7 @@ export function ContentEditor() {
 
       <div className="flex flex-col gap-6">
         <Card title="Home headline" description="Each line break starts a new line in the headline.">
-          <div id="hero" className="flex scroll-mt-24 flex-col gap-4">
+          <div id="hero" className="flex scroll-mt-32 flex-col gap-4">
             <Bilingual label="Headline" value={c.hero.title} onChange={(v) => up((d) => ({ ...d, hero: { ...d.hero, title: v } }))} multiline rows={3} />
             <Bilingual label="Introduction" value={c.hero.sub} onChange={(v) => up((d) => ({ ...d, hero: { ...d.hero, sub: v } }))} multiline />
             <Bilingual label="Button" value={c.hero.cta} onChange={(v) => up((d) => ({ ...d, hero: { ...d.hero, cta: v } }))} />
@@ -89,7 +99,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Studio">
-          <div id="studio" className="flex scroll-mt-24 flex-col gap-4">
+          <div id="studio" className="flex scroll-mt-32 flex-col gap-4">
             <Bilingual label="Statement" value={c.about.title} onChange={(v) => up((d) => ({ ...d, about: { ...d.about, title: v } }))} multiline rows={2} />
             <ListEditor<L>
               items={c.about.body}
@@ -104,7 +114,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Vision & mission" description="Leave a blank line between paragraphs.">
-          <div id="vision" className="flex scroll-mt-24 flex-col gap-6">
+          <div id="vision" className="flex scroll-mt-32 flex-col gap-6">
             {(["vision", "mission"] as const).map((k) => (
               <div key={k} className="flex flex-col gap-4 border-t border-white/10 pt-4 first:border-0 first:pt-0">
                 <p className="text-sm font-semibold capitalize">{k}</p>
@@ -117,7 +127,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Values">
-          <div id="values" className="scroll-mt-24">
+          <div id="values" className="scroll-mt-32">
             <ListEditor<Value>
               items={c.values}
               onChange={(v) => up((d) => ({ ...d, values: v }))}
@@ -135,7 +145,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Services">
-          <div id="services" className="scroll-mt-24">
+          <div id="services" className="scroll-mt-32">
             <ListEditor<Service>
               items={c.services}
               onChange={(v) => up((d) => ({ ...d, services: v }))}
@@ -154,7 +164,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Sectors">
-          <div id="sectors" className="flex scroll-mt-24 flex-col gap-4">
+          <div id="sectors" className="flex scroll-mt-32 flex-col gap-4">
             <Bilingual label="Title" value={c.sectorsIntro.title} onChange={(v) => up((d) => ({ ...d, sectorsIntro: { ...d.sectorsIntro, title: v } }))} />
             <Bilingual label="Introduction" value={c.sectorsIntro.body} onChange={(v) => up((d) => ({ ...d, sectorsIntro: { ...d.sectorsIntro, body: v } }))} multiline rows={4} />
             <ListEditor<SectorBlock>
@@ -182,7 +192,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Process" description="Also drives the six stages of the 3D build.">
-          <div id="process" className="scroll-mt-24">
+          <div id="process" className="scroll-mt-32">
             <ListEditor<TitledText>
               items={c.process}
               onChange={(v) => up((d) => ({ ...d, process: v }))}
@@ -200,7 +210,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Statement">
-          <div id="statement" className="scroll-mt-24">
+          <div id="statement" className="scroll-mt-32">
             <ListEditor<L>
               items={c.statement}
               onChange={(v) => up((d) => ({ ...d, statement: v }))}
@@ -213,7 +223,7 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Method & quality" description="Leave a blank line between paragraphs. On the services page the method's first paragraph opens the page and the rest follow it.">
-          <div id="chapters" className="flex scroll-mt-24 flex-col gap-6">
+          <div id="chapters" className="flex scroll-mt-32 flex-col gap-6">
             {(["methodology", "execution", "quality"] as const).map((k) => (
               <div key={k} className="flex flex-col gap-4 border-t border-white/10 pt-4 first:border-0 first:pt-0">
                 <p className="text-sm font-semibold capitalize">{k}</p>
@@ -235,23 +245,14 @@ export function ContentEditor() {
         </Card>
 
         <Card title="Team introduction">
-          <div id="team" className="flex scroll-mt-24 flex-col gap-4">
+          <div id="team" className="flex scroll-mt-32 flex-col gap-4">
             <Bilingual label="Title" value={c.teamIntro.title} onChange={(v) => up((d) => ({ ...d, teamIntro: { ...d.teamIntro, title: v } }))} multiline rows={2} />
             <Bilingual label="Text" value={c.teamIntro.body} onChange={(v) => up((d) => ({ ...d, teamIntro: { ...d.teamIntro, body: v } }))} multiline rows={5} />
           </div>
         </Card>
       </div>
 
-      {dirty && (
-        <div className="sticky bottom-4 z-20 mt-8 flex justify-end">
-          <div className="chamfer flex items-center gap-3 bg-deep-3 p-2 ps-4 shadow-2xl ring-1 ring-white/10 [--chamfer:10px]">
-            <span className="text-sm text-mist">Unsaved changes</span>
-            <Button tone="primary" icon={<FloppyDisk size={16} />} onClick={save}>
-              Save changes
-            </Button>
-          </div>
-        </div>
-      )}
+      <SaveBar show={dirty} busy={busy} onSave={save} />
     </>
   );
 }

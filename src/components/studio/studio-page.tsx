@@ -91,12 +91,17 @@ function Values() {
       const cards = gsap.utils.toArray<HTMLElement>("[data-value]");
       cards.forEach((card, i) => {
         if (i === cards.length - 1) return;
-        gsap.to(card.firstElementChild, {
-          scale: 0.92,
-          opacity: 0.35,
-          ease: "none",
-          scrollTrigger: { trigger: cards[i + 1], start: "top bottom", end: "top 25%", scrub: true },
-        });
+        // Dimmed rather than faded: a translucent sheet would show the ones under it through it.
+        gsap.fromTo(
+          card.firstElementChild,
+          { scale: 1, filter: "brightness(1)" },
+          {
+            scale: 0.92,
+            filter: "brightness(0.4)",
+            ease: "none",
+            scrollTrigger: { trigger: cards[i + 1], start: "top bottom", end: "top 25%", scrub: true },
+          },
+        );
       });
     },
     { scope: ref, dependencies: [values.length] },

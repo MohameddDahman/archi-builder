@@ -3,6 +3,7 @@
 import { LocaleProvider } from "@/components/providers/locale";
 import { SiteHydrator } from "@/components/providers/site-hydrator";
 import type { Locale } from "@/lib/i18n";
+import type { PublicSite } from "@/lib/content/server";
 import { useBook, useBookCtx } from "./use-book";
 import { SheetContent } from "./sheets";
 
@@ -26,10 +27,10 @@ function Sheets() {
   );
 }
 
-export function PrintVolume({ lang }: { lang: Locale }) {
+export function PrintVolume({ lang, site }: { lang: Locale; site: PublicSite }) {
   return (
     <LocaleProvider lang={lang}>
-      <SiteHydrator />
+      <SiteHydrator initial={site} live={false} />
       <Sheets />
     </LocaleProvider>
   );

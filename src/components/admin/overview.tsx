@@ -21,9 +21,9 @@ export function Overview() {
   return (
     <>
       <PageTitle title="Overview" description="What visitors see right now, and what needs your attention." />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {stats.map(({ label, value, href, icon: Icon }) => (
-          <Link key={label} href={href} className="group border border-white/10 bg-deep-2 p-5 transition-colors hover:border-ochre/40">
+          <Link key={label} href={href} className="group border border-white/10 bg-deep-2 p-4 transition-colors hover:border-ochre/40 sm:p-5">
             <Icon size={20} className="text-ochre" aria-hidden="true" />
             <p className="mega mega-md mt-6">{String(value).padStart(2, "0")}</p>
             <p className="mt-1 flex items-center justify-between text-sm text-mist">
@@ -35,7 +35,7 @@ export function Overview() {
       </div>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
-        <Card title="Latest messages" actions={<Link href="/admin/messages" className="text-sm text-ochre hover:underline">Open inbox</Link>}>
+        <Card title="Latest messages" actions={<Link href="/admin/messages" className="-my-2 inline-block py-2 text-sm text-ochre hover:underline">Open inbox</Link>}>
           {messages.length === 0 ? (
             <p className="text-sm text-mist">No messages yet. Enquiries from the contact page arrive here.</p>
           ) : (

@@ -4,16 +4,18 @@ import { useEffect, useState } from "react";
 import { FloppyDisk, Plus } from "@phosphor-icons/react";
 import { useSite, newId } from "@/lib/content/store";
 import type { TeamMember } from "@/lib/content/types";
-import { Bilingual, Button, Card, Confirm, PageTitle, useToast, useUnsavedGuard } from "./ui";
+import { errorText } from "@/lib/admin/session";
+import { Bilingual, Button, Card, Confirm, PageTitle, SaveBar, useToast, useUnsavedGuard } from "./ui";
 import { ImageInput } from "./image-input";
 
 export function TeamEditor() {
   const toast = useToast();
   const team = useSite((s) => s.team);
-  const saveMember = useSite((s) => s.saveMember);
+  const saveTeam = useSite((s) => s.saveTeam);
   const deleteMember = useSite((s) => s.deleteMember);
   const [draft, setDraft] = useState<TeamMember[]>(team);
   const [dirty, setDirty] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [remove, setRemove] = useState<TeamMember | null>(null);
   useUnsavedGuard(dirty);
 
@@ -27,10 +29,18 @@ export function TeamEditor() {
     setDirty(true);
   };
 
-  const save = () => {
-    draft.forEach((m, i) => saveMember({ ...m, order: i + 1 }));
-    setDirty(false);
-    toast("Team saved");
+  const save = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await saveTeam(draft);
+      setDirty(false);
+      toast("Team saved");
+    } catch (e) {
+      toast(errorText(e), "warn");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const add = () => {
@@ -51,8 +61,8 @@ export function TeamEditor() {
             <Button icon={<Plus size={16} />} onClick={add}>
               Add person
             </Button>
-            <Button tone="primary" icon={<FloppyDisk size={16} />} disabled={!dirty} onClick={save}>
-              Save changes
+            <Button tone="primary" icon={<FloppyDisk size={16} />} disabled={!dirty || busy} onClick={save}>
+              {busy ? "Saving…" : "Save changes"}
             </Button>
           </>
         }
@@ -69,7 +79,7 @@ export function TeamEditor() {
               </Button>
             }
           >
-            <div className="grid gap-6 lg:grid-cols-[1fr_16rem]">
+            <div className="grid gap-6 xl:grid-cols-[1fr_16rem]">
               <div className="flex flex-col gap-4">
                 <Bilingual label="Name" value={m.name} onChange={(v) => update(m.id, { name: v })} />
                 <Bilingual label="Role" value={m.role} onChange={(v) => update(m.id, { role: v })} />
@@ -80,16 +90,21 @@ export function TeamEditor() {
           </Card>
         ))}
       </div>
+      <SaveBar show={dirty} busy={busy} onSave={save} />
       <Confirm
         open={!!remove}
         title={`Remove ${remove?.name.en || "this person"}?`}
         body="They will no longer appear on the Studio page or in the book."
         confirmLabel="Remove"
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!remove) return;
-          if (team.some((t) => t.id === remove.id)) deleteMember(remove.id);
-          setDraft((d) => d.filter((x) => x.id !== remove.id));
-          toast(`Removed ${remove.name.en || "person"}`);
+          try {
+            if (team.some((t) => t.id === remove.id)) await deleteMember(remove.id);
+            setDraft((d) => d.filter((x) => x.id !== remove.id));
+            toast(`Removed ${remove.name.en || "person"}`);
+          } catch (e) {
+            toast(errorText(e), "warn");
+          }
         }}
         onClose={() => setRemove(null)}
       />

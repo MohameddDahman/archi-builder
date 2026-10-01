@@ -44,3 +44,6 @@ next-env.d.ts
 .claude/
 
 .vercel
+
+# convex cli temp files
+.convex-tmp/

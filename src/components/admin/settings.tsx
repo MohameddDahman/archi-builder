@@ -4,15 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { FloppyDisk, DownloadSimple, UploadSimple, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { useSite } from "@/lib/content/store";
 import type { Settings, SiteData } from "@/lib/content/types";
-import { Bilingual, Button, Card, Confirm, ListEditor, PageTitle, TextInput, useToast, useUnsavedGuard } from "./ui";
+import { errorText } from "@/lib/admin/session";
+import { Bilingual, Button, Card, Confirm, ListEditor, PageTitle, SaveBar, TextInput, useToast, useUnsavedGuard } from "./ui";
 
 export function SettingsEditor() {
   const toast = useToast();
   const settings = useSite((s) => s.settings);
   const setSettings = useSite((s) => s.setSettings);
   const resetAll = useSite((s) => s.resetAll);
+  const restore = useSite((s) => s.restore);
   const [d, setD] = useState<Settings>(settings);
   const [dirty, setDirty] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const file = useRef<HTMLInputElement>(null);
   useUnsavedGuard(dirty);
@@ -27,15 +30,23 @@ export function SettingsEditor() {
     setDirty(true);
   };
 
-  const save = () => {
-    setSettings({ ...d, phones: d.phones.map((p) => p.trim()).filter(Boolean) });
-    setDirty(false);
-    toast("Settings saved");
+  const save = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await setSettings({ ...d, phones: d.phones.map((p) => p.trim()).filter(Boolean) });
+      setDirty(false);
+      toast("Settings saved");
+    } catch (e) {
+      toast(errorText(e), "warn");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const exportData = () => {
-    const { content, projects, team, settings: st, messages } = useSite.getState();
-    const blob = new Blob([JSON.stringify({ content, projects, team, settings: st, messages }, null, 2)], { type: "application/json" });
+    const { content, projects, team, settings: st } = useSite.getState();
+    const blob = new Blob([JSON.stringify({ content, projects, team, settings: st }, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `archi-builder-content-${new Date().toISOString().slice(0, 10)}.json`;
@@ -45,19 +56,20 @@ export function SettingsEditor() {
 
   const importData = async (f?: File) => {
     if (!f) return;
+    let data: Partial<SiteData>;
     try {
-      const data = JSON.parse(await f.text()) as Partial<SiteData>;
+      data = JSON.parse(await f.text()) as Partial<SiteData>;
       if (!data.content || !data.projects || !data.settings) throw new Error("shape");
-      useSite.setState({
-        content: data.content,
-        projects: data.projects,
-        team: data.team ?? [],
-        settings: data.settings,
-        messages: data.messages ?? [],
-      });
-      toast("Backup restored");
     } catch {
       toast("That file isn't an Archi Builder backup. Export one from this page first.", "warn");
+      return;
+    }
+    try {
+      await restore({ content: data.content, projects: data.projects, team: data.team ?? [], settings: data.settings });
+      setDirty(false);
+      toast("Backup restored");
+    } catch (e) {
+      toast(errorText(e), "warn");
     }
   };
 
@@ -67,8 +79,8 @@ export function SettingsEditor() {
         title="Settings"
         description="Contact details used across the site, the footer and the portfolio book."
         actions={
-          <Button tone="primary" icon={<FloppyDisk size={16} />} disabled={!dirty} onClick={save}>
-            Save changes
+          <Button tone="primary" icon={<FloppyDisk size={16} />} disabled={!dirty || busy} onClick={save}>
+            {busy ? "Saving…" : "Save changes"}
           </Button>
         }
       />
@@ -118,15 +130,20 @@ export function SettingsEditor() {
           </Button>
         </Card>
       </div>
+      <SaveBar show={dirty} busy={busy} onSave={save} />
       <Confirm
         open={confirmReset}
         title="Restore the original content?"
-        body="All projects, texts, team members, settings and messages go back to the launch version. Export a backup first if you might need your edits."
+        body="All projects, texts, team members and settings go back to the launch version. Messages are kept. Export a backup first if you might need your edits."
         confirmLabel="Restore original"
-        onConfirm={() => {
-          resetAll();
-          setDirty(false);
-          toast("Original content restored");
+        onConfirm={async () => {
+          try {
+            await resetAll();
+            setDirty(false);
+            toast("Original content restored");
+          } catch (e) {
+            toast(errorText(e), "warn");
+          }
         }}
         onClose={() => setConfirmReset(false)}
       />

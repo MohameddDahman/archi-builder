@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, locales } from "@/lib/i18n";
 import { PrintVolume } from "@/components/book/print-volume";
+import { getSiteData } from "@/lib/content/server";
 
 export const generateStaticParams = () => locales.map((lang) => ({ lang }));
 
@@ -19,5 +20,5 @@ export async function generateMetadata({ params }: PageProps<"/print/book/[lang]
 export default async function PrintBookPage({ params }: PageProps<"/print/book/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  return <PrintVolume lang={lang} />;
+  return <PrintVolume lang={lang} site={await getSiteData()} />;
 }

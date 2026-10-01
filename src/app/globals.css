@@ -70,6 +70,12 @@ body {
   outline: 2px solid var(--color-ochre);
   outline-offset: 3px;
 }
+/* Fields draw the ring on their own edge, not floating outside it. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline-offset: -1px;
+}
 
 html.lenis,
 html.lenis body {
@@ -260,6 +266,17 @@ em.accent,
 .link-line:focus-visible,
 .group:hover .link-line {
   background-size: 100% 1px;
+}
+/* Text links keep their size on the page but get a finger-sized hit area. */
+a.link-line,
+button.link-line {
+  position: relative;
+}
+a.link-line::after,
+button.link-line::after {
+  content: "";
+  position: absolute;
+  inset: -10px -6px;
 }
 
 .no-scrollbar {

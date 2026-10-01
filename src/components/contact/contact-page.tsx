@@ -40,7 +40,7 @@ function ContactForm() {
   const [f, setF] = useState<Fields>(empty);
   const [errors, setErrors] = useState<Errors>({});
   const [touched, setTouched] = useState<Partial<Record<keyof Fields, boolean>>>({});
-  const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const summary = useRef<HTMLDivElement>(null);
   const id = useId();
 
@@ -73,10 +73,12 @@ function ContactForm() {
       return;
     }
     setState("sending");
-    // Stored locally until Convex is connected (see /convex/messages.ts).
-    await new Promise((r) => setTimeout(r, 700));
-    addMessage({ ...f, locale: lang });
-    setState("sent");
+    try {
+      await addMessage({ ...f, locale: lang });
+      setState("sent");
+    } catch {
+      setState("failed");
+    }
   };
 
   if (state === "sent") {
@@ -157,7 +159,12 @@ function ContactForm() {
         <textarea id={`${id}-message`} rows={5} className={clsx(field, "resize-none")} value={f.message} onChange={set("message")} onBlur={blur("message")} required aria-invalid={!!(touched.message && errors.message)} aria-describedby={`${id}-message-help${errors.message ? ` ${id}-message-err` : ""}`} />
       </Field>
 
-      <div>
+      <div className="flex flex-col items-start gap-4">
+        {state === "failed" && (
+          <p role="alert" className="max-w-md text-sm text-red-300">
+            {t(ui.form.failed)}
+          </p>
+        )}
         <BtnButton type="submit" disabled={state === "sending"} aria-busy={state === "sending"} className="disabled:opacity-70">
           {state === "sending" ? t(ui.form.sending) : t(ui.form.send)}
         </BtnButton>

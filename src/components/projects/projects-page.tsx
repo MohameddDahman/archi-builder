@@ -71,9 +71,10 @@ export function ProjectsPage() {
         </p>
       </PageHero>
 
-      <div className="sticky top-0 z-30 mt-16 border-y hair bg-deep/85 px-[var(--gutter)] backdrop-blur-xl">
-        <div className="flex items-center justify-between gap-4 py-3">
-          <div className="no-scrollbar flex gap-2 overflow-x-auto" role="group" aria-label={t(ui.sector)}>
+      {/* On phones every filter stays in view, wrapping to a second row; from sm up they share one sticky row. */}
+      <div className="z-30 mt-16 border-y hair bg-deep/85 px-[var(--gutter)] backdrop-blur-xl sm:sticky sm:top-0">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 py-3 sm:flex sm:items-center sm:justify-between sm:gap-4">
+          <div className="no-scrollbar flex min-w-0 flex-wrap gap-1.5 sm:flex-nowrap sm:gap-2 sm:overflow-x-auto" role="group" aria-label={t(ui.sector)}>
             {sectors.map((s) => {
               const count = s === "all" ? all.length : all.filter((p) => p.sector === s).length;
               return (
@@ -83,7 +84,7 @@ export function ProjectsPage() {
                   aria-pressed={filter === s}
                   onClick={() => choose(s)}
                   className={clsx(
-                    "label chamfer flex h-10 shrink-0 items-center gap-2 px-4 transition-colors duration-300",
+                    "label chamfer flex h-10 shrink-0 items-center gap-1.5 px-2.5 transition-colors duration-300 max-sm:ltr:!text-[0.62rem] max-sm:ltr:!tracking-[0.08em] sm:gap-2 sm:px-4",
                     filter === s ? "bg-ochre text-ink" : "bg-white/[0.06] text-gypsum/70 hover:bg-white/[0.12] hover:text-gypsum",
                   )}
                 >
@@ -93,7 +94,7 @@ export function ProjectsPage() {
               );
             })}
           </div>
-          <div className="flex shrink-0 gap-1" role="group" aria-label="View">
+          <div className="flex shrink-0 gap-1" role="group" aria-label={t(ui.viewLabel)}>
             {(["grid", "list"] as const).map((v) => (
               <button
                 key={v}
@@ -102,7 +103,7 @@ export function ProjectsPage() {
                 aria-label={v === "grid" ? t(ui.gridView) : t(ui.listView)}
                 onClick={() => setViewSaved(v)}
                 className={clsx(
-                  "chamfer grid h-10 w-10 place-items-center transition-colors",
+                  "chamfer grid h-10 w-9 place-items-center transition-colors sm:w-10",
                   view === v ? "bg-gypsum text-ink" : "bg-white/[0.06] text-gypsum/60 hover:text-gypsum",
                 )}
               >

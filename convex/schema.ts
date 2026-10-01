@@ -1,52 +1,25 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { memberFields, projectFields, settingsFields } from "./lib/validators";
 
 /**
- * Mirrors src/lib/content/types.ts. When Convex is connected, the local
- * Zustand store (src/lib/content/store.ts) is swapped for queries/mutations
- * over these tables; pages already read everything through `useSite`.
+ * The site's content, as the admin edits it. Mirrors src/lib/content/types.ts;
+ * projects and team members keep the site's own ids in `key`.
  */
-const l = v.object({ en: v.string(), ar: v.string() });
-
 export default defineSchema({
-  projects: defineTable({
-    slug: v.string(),
-    name: v.string(),
-    nameAr: v.string(),
-    type: l,
-    sector: v.union(v.literal("commercial"), v.literal("hospitality"), v.literal("residential")),
-    city: l,
-    year: v.string(),
-    area: v.string(),
-    scope: v.array(l),
-    materials: v.optional(v.array(l)),
-    summary: l,
-    cover: v.string(), // URL or Convex storage id
-    gallery: v.array(v.string()),
-    featured: v.boolean(),
-    inBook: v.boolean(),
-    published: v.boolean(),
-    order: v.number(),
-  })
-    .index("by_slug", ["slug"])
+  projects: defineTable({ key: v.string(), ...projectFields })
+    .index("by_key", ["key"])
     .index("by_order", ["order"]),
 
-  team: defineTable({ name: l, role: l, bio: l, photo: v.string(), order: v.number() }).index("by_order", ["order"]),
+  team: defineTable({ key: v.string(), ...memberFields })
+    .index("by_key", ["key"])
+    .index("by_order", ["order"]),
 
-  /** One document per page section (hero, about, vision, services…), value = section JSON. */
+  /** The page copy (SiteContent) as one document under key "site". */
   content: defineTable({ key: v.string(), value: v.any() }).index("by_key", ["key"]),
 
-  settings: defineTable({
-    companyName: l,
-    address: l,
-    phones: v.array(v.string()),
-    email: v.string(),
-    whatsapp: v.string(),
-    instagram: v.string(),
-    linkedin: v.string(),
-    mapQuery: v.string(),
-    coordinates: v.string(),
-  }),
+  /** One document: contact details used across the site. */
+  settings: defineTable(settingsFields),
 
   messages: defineTable({
     name: v.string(),
@@ -56,5 +29,10 @@ export default defineSchema({
     message: v.string(),
     locale: v.string(),
     read: v.boolean(),
-  }),
+  }).index("by_read", ["read"]),
+
+  /** Signed-in site manager sessions. Only a hash of each token is stored. */
+  sessions: defineTable({ tokenHash: v.string(), expiresAt: v.number() })
+    .index("by_tokenHash", ["tokenHash"])
+    .index("by_expiresAt", ["expiresAt"]),
 });

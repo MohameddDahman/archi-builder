@@ -7,6 +7,8 @@ import { LocaleProvider } from "@/components/providers/locale";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { TransitionProvider } from "@/components/providers/transition";
 import { SiteHydrator } from "@/components/providers/site-hydrator";
+import { ConvexClientProvider } from "@/components/providers/convex";
+import { getSiteData } from "@/lib/content/server";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Preloader } from "@/components/ui/preloader";
@@ -40,14 +42,16 @@ export const viewport: Viewport = {
 export default async function LangLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
+  const site = await getSiteData();
 
   return (
     <html lang={lang} dir={dirOf(lang)} className={fontVars} suppressHydrationWarning>
       <body className="grain">
+        <ConvexClientProvider>
         <LocaleProvider lang={lang}>
           <SmoothScroll>
             <TransitionProvider>
-              <SiteHydrator />
+              <SiteHydrator initial={site} />
               <Preloader />
               <Header />
               <main id="main" tabIndex={-1} className="outline-none">
@@ -57,6 +61,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
             </TransitionProvider>
           </SmoothScroll>
         </LocaleProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );

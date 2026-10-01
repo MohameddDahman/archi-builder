@@ -471,7 +471,7 @@ export function Process({ letter }: { letter?: string }) {
                   sizes="45vw"
                   className={clsx(
                     "object-cover transition-all duration-[1.2s] ease-[var(--ease-out-expo)]",
-                    active === i ? "scale-100 opacity-100" : "scale-110 opacity-0",
+                    active % STAGE_IMAGES.length === i ? "scale-100 opacity-100" : "scale-110 opacity-0",
                   )}
                 />
               ))}
@@ -479,7 +479,7 @@ export function Process({ letter }: { letter?: string }) {
               <div className="absolute inset-x-6 bottom-6 flex items-end justify-between">
                 <span className="mega mega-lg leading-none" dir="ltr">
                   {n(String(active + 1).padStart(2, "0"))}
-                  <span className="text-gypsum/40">/{n("06")}</span>
+                  <span className="text-gypsum/40">/{n(String(process.length).padStart(2, "0"))}</span>
                 </span>
                 <span className="label text-ochre">{t(process[active]?.title)}</span>
               </div>
@@ -500,12 +500,12 @@ export function Process({ letter }: { letter?: string }) {
                 <span className="font-mono text-xs text-ochre">
                   {n(String(i + 1).padStart(2, "0"))}
                 </span>
-                <Scramble text={`STAGE ${String(i + 1).padStart(2, "0")}/06`} className="label text-mist" />
+                <Scramble text={`${t(ui.stage)} ${n(String(i + 1).padStart(2, "0"))}/${n(String(process.length).padStart(2, "0"))}`} className="label text-mist" />
               </div>
               <h3 className="mega mega-md mt-6">{t(s.title)}</h3>
               <p className="lead mt-4 max-w-md text-gypsum/70">{t(s.body)}</p>
               <div className="chamfer relative mt-6 aspect-[16/10] overflow-hidden lg:hidden">
-                <Image src={STAGE_IMAGES[i]} alt="" fill sizes="100vw" className="object-cover" />
+                <Image src={STAGE_IMAGES[i % STAGE_IMAGES.length]} alt="" fill sizes="100vw" className="object-cover" />
               </div>
             </li>
           ))}

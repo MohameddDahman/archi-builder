@@ -73,8 +73,8 @@ export const ui = {
   workLabel: { en: "Built work", ar: "أعمال منفّذة" },
   workTitle: { en: "Built, handed over, *in use.*", ar: "نُفّذت وسُلّمت *وتعمل اليوم.*" },
   workBody: {
-    en: "Restaurants, bakeries, cafés and private homes, delivered in Jeddah and Riyadh.",
-    ar: "مطاعم ومخابز ومقاهٍ ومساكن خاصة، نُفّذت في جدة والرياض.",
+    en: "Restaurants, bakeries, cafés and private homes, delivered in Jeddah.",
+    ar: "مطاعم ومخابز ومقاهٍ ومساكن خاصة، نُفّذت في جدة.",
   },
   allProjects: { en: "All projects", ar: "كل المشاريع" },
   viewProject: { en: "View project", ar: "عرض المشروع" },
@@ -129,6 +129,7 @@ export const ui = {
     hospitality: { en: "Hospitality", ar: "ضيافة" },
     residential: { en: "Residential", ar: "سكني" },
   } as Record<string, L>,
+  viewLabel: { en: "View", ar: "طريقة العرض" },
   gridView: { en: "Grid", ar: "شبكة" },
   listView: { en: "List", ar: "قائمة" },
   projectsCount: { en: "Projects", ar: "مشاريع" },
@@ -220,6 +221,10 @@ export const ui = {
     send: { en: "Send message", ar: "أرسل الرسالة" },
     sending: { en: "Sending…", ar: "جارٍ الإرسال…" },
     sent: { en: "Message sent", ar: "تم إرسال الرسالة" },
+    failed: {
+      en: "The message didn't go through. Check your connection and try again, or call us on the numbers below.",
+      ar: "لم تُرسل الرسالة. تحقق من الاتصال وحاول مرة أخرى، أو اتصل بنا على الأرقام أدناه.",
+    },
     sentBody: {
       en: "Thank you. The team will be in touch using the details you gave.",
       ar: "شكرًا لك. سيتواصل معك الفريق عبر البيانات التي أرسلتها.",

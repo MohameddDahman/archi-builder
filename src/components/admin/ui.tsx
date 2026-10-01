@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState } from "react";
 import clsx from "clsx";
-import { Check, Warning, X, ArrowUp, ArrowDown, Trash, Plus } from "@phosphor-icons/react";
+import { Check, Warning, X, ArrowUp, ArrowDown, Trash, Plus, FloppyDisk } from "@phosphor-icons/react";
 import type { L } from "@/lib/i18n";
 
 /* ------------------------------------------------------------------
@@ -45,7 +45,7 @@ export function IconButton({ label, className, children, ...rest }: { label: str
       type="button"
       aria-label={label}
       title={label}
-      className={clsx("grid h-9 w-9 place-items-center rounded-sm text-gypsum/70 transition-colors hover:bg-white/10 hover:text-gypsum disabled:opacity-30", className)}
+      className={clsx("grid h-10 w-10 place-items-center rounded-sm text-gypsum/70 transition-colors hover:bg-white/10 hover:text-gypsum disabled:opacity-30 lg:h-9 lg:w-9", className)}
       {...rest}
     >
       {children}
@@ -60,7 +60,7 @@ export function Card({ title, description, actions, children, className }: { tit
   return (
     <section className={clsx("border border-white/10 bg-deep-2", className)}>
       {(title || actions) && (
-        <header className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
+        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-white/10 px-4 py-4 sm:px-5">
           <div>
             {title && <h2 className="font-semibold">{title}</h2>}
             {description && <p className="mt-1 text-sm text-mist">{description}</p>}
@@ -68,16 +68,16 @@ export function Card({ title, description, actions, children, className }: { tit
           {actions && <div className="flex gap-2">{actions}</div>}
         </header>
       )}
-      <div className="p-5">{children}</div>
+      <div className="p-4 sm:p-5">{children}</div>
     </section>
   );
 }
 
 export function PageTitle({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="mega mega-md">{title}</h1>
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 md:mb-8">
+      <div className="min-w-0">
+        <h1 className="mega mega-md break-words">{title}</h1>
         {description && <p className="mt-2 max-w-2xl text-sm text-mist">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -89,7 +89,7 @@ export function PageTitle({ title, description, actions }: { title: string; desc
    Fields
 ------------------------------------------------------------------ */
 const inputCls =
-  "w-full border border-white/12 bg-deep px-3 py-2.5 text-[0.95rem] outline-none transition-colors placeholder:text-gypsum/25 focus:border-ochre aria-[invalid=true]:border-red-400/70";
+  "w-full border border-white/12 bg-deep px-3 py-2.5 text-base outline-none transition-colors placeholder:text-gypsum/25 focus:border-ochre aria-[invalid=true]:border-red-400/70 md:text-[0.95rem]";
 
 export function Field({ label, help, error, children, htmlFor }: { label: string; help?: string; error?: string; children: React.ReactNode; htmlFor?: string }) {
   return (
@@ -253,7 +253,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastCtx.Provider value={push}>
       {children}
-      <div className="pointer-events-none fixed bottom-6 end-6 z-50 flex flex-col gap-2" role="status" aria-live="polite">
+      <div
+        className="pointer-events-none fixed inset-x-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-[60] flex flex-col items-center gap-2 lg:inset-x-auto lg:bottom-6 lg:end-6 lg:items-end"
+        role="status"
+        aria-live="polite"
+      >
         {toasts.map((t) => (
           <div key={t.id} className="chamfer pointer-events-auto flex items-center gap-3 bg-deep-3 px-4 py-3 text-sm shadow-2xl ring-1 ring-white/10 [--chamfer:10px]">
             {t.tone === "ok" ? <Check size={16} className="text-ochre" /> : <Warning size={16} className="text-red-300" />}
@@ -329,6 +333,24 @@ export function Confirm({
             {confirmLabel}
           </Button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The save button that follows the editor down the page: above the tab bar on
+ * a phone, at the foot of the form on a desktop. Shown only with unsaved edits.
+ */
+export function SaveBar({ show, busy, onSave, label = "Save changes" }: { show: boolean; busy?: boolean; onSave: () => void; label?: string }) {
+  if (!show) return null;
+  return (
+    <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 px-4 pb-3 lg:sticky lg:bottom-4 lg:mt-8 lg:flex lg:justify-end lg:px-0 lg:pb-0">
+      <div className="chamfer flex items-center justify-between gap-3 bg-deep-3 p-2 ps-4 shadow-2xl ring-1 ring-white/10 [--chamfer:10px]">
+        <span className="text-sm text-mist">Unsaved changes</span>
+        <Button tone="primary" icon={<FloppyDisk size={16} />} onClick={onSave} disabled={busy}>
+          {busy ? "Saving…" : label}
+        </Button>
       </div>
     </div>
   );
