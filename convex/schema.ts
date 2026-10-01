@@ -19,6 +19,7 @@ export default defineSchema({
     year: v.string(),
     area: v.string(),
     scope: v.array(l),
+    materials: v.optional(v.array(l)),
     summary: l,
     cover: v.string(), // URL or Convex storage id
     gallery: v.array(v.string()),

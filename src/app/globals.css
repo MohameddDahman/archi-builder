@@ -275,32 +275,249 @@ textarea[dir="rtl"] {
   font-family: var(--font-plex-arabic), sans-serif;
 }
 
-/* Flip-book: gutter shading on the spine side of each page */
-.book-page.--left .spine {
-  right: 0;
-  background: linear-gradient(to left, rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.04) 45%, transparent);
+/* ------------------------------------------------------------------
+   The portfolio volume (/book)
+
+   page-flip injects its own stylesheet, which has a typo in the wrapper
+   selector (.sft__wrapper). These are the rules it actually needs,
+   corrected and scoped to the book so nothing leaks into the site.
+------------------------------------------------------------------ */
+.ab-book .stf__parent {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  transform: translateZ(0);
+  touch-action: pan-y;
+  /* page-flip writes a min size from the smallest page; here that only
+     decides when the book drops to single pages. */
+  min-width: 0 !important;
+  min-height: 0 !important;
 }
-.book-page.--right .spine {
+.ab-book .stf__wrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* A deep perspective, so the board cover stays a board as it swings. */
+.ab-book .stf__block {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  perspective: 3200px;
+}
+.ab-book .stf__item {
+  display: none;
+  position: absolute;
+  transform-style: preserve-3d;
+}
+.ab-book :is(.stf__outerShadow, .stf__innerShadow, .stf__hardShadow, .stf__hardInnerShadow) {
+  position: absolute;
   left: 0;
-  background: linear-gradient(to right, rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.04) 45%, transparent);
+  top: 0;
+  pointer-events: none;
 }
-.book-page.--hard .spine {
+
+/* Paper: a faint fractal grain so the pages read as stock, not screen. */
+.book-paper {
+  background-color: #f4eee4;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.26 0 0 0 0 0.2 0 0 0 0.07 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+}
+
+/*
+ * The spine. A page darkens into the gutter and catches a sliver of light on
+ * the bow just beyond it: the two cues that make a flat rectangle read as a
+ * bound page. page-flip tags every sheet --left or --right as it lays out the
+ * spread, so the shading follows a page wherever it is drawn, mid-turn too.
+ */
+.ab-book .stf__item .book-gutter {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.ab-book .stf__item[class~="--left"] .book-gutter {
+  background:
+    linear-gradient(to left, rgb(22 17 13 / 0.24) 0%, rgb(22 17 13 / 0.09) 2.5%, rgb(255 255 255 / 0.1) 5%, rgb(22 17 13 / 0) 13%),
+    linear-gradient(to right, rgb(22 17 13 / 0.05) 0%, transparent 18%);
+}
+.ab-book .stf__item[class~="--right"] .book-gutter {
+  background:
+    linear-gradient(to right, rgb(22 17 13 / 0.24) 0%, rgb(22 17 13 / 0.09) 2.5%, rgb(255 255 255 / 0.1) 5%, rgb(22 17 13 / 0) 13%),
+    linear-gradient(to left, rgb(22 17 13 / 0.05) 0%, transparent 18%);
+}
+/* Covers are boards, not paper: an edge bevel and no gutter fall-off. */
+.ab-book .stf__item[class~="--hard"] .book-gutter {
+  background: none;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
+    inset 0 0 48px rgb(0 0 0 / 0.5);
+}
+
+/* The column the book is drawn in: single pages below 900px, spreads above,
+   each sized so the book and its controls fit on screen. */
+.book-column {
+  width: 100%;
+  margin-inline: auto;
+  max-width: min(34rem, calc((100svh - 15rem) * 0.78125));
+}
+@media (min-width: 56.25rem) {
+  .book-column {
+    max-width: min(72rem, calc((100svh - 16rem) * 1.5625));
+  }
+}
+
+/* Type set inside the book */
+.bk-serif {
+  font-family: var(--font-instrument), "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+.bk-display {
+  font-family: var(--font-instrument), "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  padding-inline-start: 0.3em;
+  text-transform: uppercase;
+}
+.bk-mono {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.bk-cond {
+  font-family: var(--font-archivo), sans-serif;
+  font-variation-settings: "wdth" 80;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[dir="rtl"] .bk-serif,
+[dir="rtl"] .bk-display {
+  font-family: var(--font-markazi), var(--font-plex-arabic), serif;
+  font-weight: 500;
+  letter-spacing: 0;
+  padding-inline-start: 0;
+}
+[dir="rtl"] .bk-mono,
+[dir="rtl"] .bk-cond {
+  font-family: var(--font-plex-arabic), sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Foil blocking on the cover: light travels across the lettering. */
+.book-foil {
+  background-image: linear-gradient(105deg, #a8781a 0%, #e0ab26 32%, #fff1c9 46%, #e0ab26 58%, #94690f 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: book-foil 7s ease-in-out infinite;
+}
+@keyframes book-foil {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0% 0;
+  }
+}
+
+/* Captions printed on photographs: a shadow under the letters, never a veil over the picture. */
+.book-caption {
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 0.6),
+    0 0 14px rgb(0 0 0 / 0.4);
+}
+
+/* Until the reader turns a page, the cover lifts off its spine to show it opens.
+   The Arabic volume is bound on the other edge. */
+.ab-book[data-peek="true"] .book-cover-lift {
+  transform-origin: 0% 50%;
+  animation: book-peek 2.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s 2;
+}
+.ab-book[data-peek="true"][data-binding="right"] .book-cover-lift {
+  transform-origin: 100% 50%;
+  animation-name: book-peek-rtl;
+}
+@keyframes book-peek {
+  0%,
+  100% {
+    transform: rotateY(0deg);
+  }
+  36%,
+  60% {
+    transform: rotateY(-18deg);
+  }
+}
+@keyframes book-peek-rtl {
+  0%,
+  100% {
+    transform: rotateY(0deg);
+  }
+  36%,
+  60% {
+    transform: rotateY(18deg);
+  }
+}
+
+/*
+ * The volume laid flat for print (/print/book/[lang]), which the PDF copy is
+ * printed from. Pages keep the flip-book's own size, so the type (in
+ * container units with rem limits) keeps its proportions. What only makes
+ * sense on a page being turned is left out: the gutter shadow, the moving
+ * foil and the paper grain.
+ */
+.book-print {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  background: #d2c7b5;
+}
+.book-print-sheet {
+  flex: none;
+  width: 540px;
+  height: 691.2px;
+  overflow: hidden;
+  break-after: page;
+}
+.book-print-sheet:last-child {
+  break-after: auto;
+}
+.book-print .book-paper {
+  background-image: none;
+}
+.book-print .book-gutter {
   display: none;
 }
-/* Spread on wide screens (width = 2 pages), single page on phones; both fit the viewport height */
-.book-stage {
-  max-width: min(1180px, calc((100svh - 21rem) * 1.414));
+.book-print .book-foil {
+  animation: none;
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: #e0ab26;
 }
-.book-slide {
-  transition: transform 0.9s var(--ease-in-out-quart);
+/* A soft gradient prints through a transparency mask, which some PDF readers
+   draw badly; the printed board has its glow mixed in as opaque colour. */
+.book-print .book-glow {
+  background-image: radial-gradient(90% 60% at 50% 0%, rgb(58 45 18), rgb(15 14 13) 70%);
 }
-.book-stage.is-full {
-  max-width: min(96vw, calc((100svh - 8rem) * 1.414));
+.book-print .book-caption {
+  text-shadow: none;
+  padding: 0.35em 0.6em;
+  background-color: rgb(15 14 13);
+  color: #f3eee6;
 }
-@media (max-width: 767px) {
-  .book-stage {
-    max-width: min(100%, calc((100svh - 14rem) / 1.414));
-    margin-inline: auto;
+@media print {
+  .book-print {
+    gap: 0;
+    padding: 0;
+    background: none;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Alexandria, Archivo, IBM_Plex_Mono, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Alexandria, Archivo, IBM_Plex_Mono, IBM_Plex_Sans_Arabic, Instrument_Serif, Markazi_Text } from "next/font/google";
 
 /**
  * One grotesk carries the whole voice: Archivo's width axis runs from
@@ -34,4 +34,24 @@ export const plexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
-export const fontVars = [archivo, plexMono, alexandria, plexArabic].map((f) => f.variable).join(" ");
+/**
+ * The printed portfolio is set like a monograph: titles in a book face.
+ * Only the book uses these, so they are not preloaded on every page.
+ */
+export const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
+  display: "swap",
+  preload: false,
+});
+
+export const markazi = Markazi_Text({
+  subsets: ["arabic", "latin"],
+  variable: "--font-markazi",
+  display: "swap",
+  preload: false,
+});
+
+export const fontVars = [archivo, plexMono, alexandria, plexArabic, instrumentSerif, markazi].map((f) => f.variable).join(" ");

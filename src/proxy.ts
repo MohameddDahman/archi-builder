@@ -4,7 +4,7 @@ import { defaultLocale, isLocale } from "@/lib/i18n";
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const first = pathname.split("/")[1] ?? "";
-  if (isLocale(first) || first === "admin") return;
+  if (isLocale(first) || first === "admin" || first === "print") return;
 
   const prefersArabic = /^ar\b/i.test(request.headers.get("accept-language") ?? "");
   const locale = prefersArabic ? "ar" : defaultLocale;

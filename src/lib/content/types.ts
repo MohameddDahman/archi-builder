@@ -13,6 +13,8 @@ export type Project = {
   year: string;
   area: string;
   scope: L[];
+  /** Finishes listed under the detail photographs in the book. Optional. */
+  materials?: L[];
   summary: L;
   cover: string;
   gallery: string[];

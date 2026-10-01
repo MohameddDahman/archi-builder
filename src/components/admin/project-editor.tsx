@@ -178,6 +178,17 @@ export function ProjectEditor({ id }: { id: string }) {
             />
           </Card>
 
+          <Card title="Materials and finishes" description="Optional. Listed under the project's detail photographs in the book, for example: Oak veneer, Terrazzo floor.">
+            <ListEditor<L>
+              items={p.materials ?? []}
+              onChange={(v) => up("materials", v)}
+              create={() => ({ en: "", ar: "" })}
+              addLabel="Add material"
+              itemLabel={(s) => s.en || "New material"}
+              render={(s, update) => <Bilingual label="Material" value={s} onChange={update} />}
+            />
+          </Card>
+
           <Card title="Images">
             <div className="flex flex-col gap-6">
               <ImageInput label="Cover" value={p.cover} onChange={(v) => up("cover", v)} help={errors.cover} />
