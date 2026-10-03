@@ -4,13 +4,14 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Pause, Play } from "@phosphor-icons/react";
-import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, useGSAP, prefersReducedMotion, maskDrop } from "@/lib/gsap";
 import { useIntro } from "@/lib/ui-store";
 import { useLocale } from "@/components/providers/locale";
 import { useSite, publishedProjects } from "@/lib/content/store";
 import { ui } from "@/lib/dict";
+import { comma } from "@/lib/i18n";
 import { TLink } from "@/components/ui/tlink";
-import { Btn, Scramble, Slab } from "@/components/ui/primitives";
+import { Btn, Scramble, Slab, TextArrow } from "@/components/ui/primitives";
 import { Rich } from "@/components/ui/rich";
 
 const HOLD = 6500;
@@ -50,7 +51,7 @@ export function Hero() {
     ...(featured.length ? featured : publishedProjects(all)).slice(0, 4).map((p) => ({
       id: p.id,
       image: p.cover,
-      alt: `${lang === "ar" ? p.nameAr : p.name}, ${t(p.type)}`,
+      alt: `${lang === "ar" ? p.nameAr : p.name}${comma(lang)}${t(p.type)}`,
       label: `${t(ui.sectorNames[p.sector])} · ${t(p.city)}`,
       name: lang === "ar" ? p.nameAr : p.name,
       sub: t(p.type),
@@ -87,7 +88,7 @@ export function Hero() {
       gsap.fromTo(el.querySelector("img"), { scale: 1.25 }, { scale: 1.06, duration: 2.2, ease: "expo.out" });
       gsap.fromTo(
         root.current!.querySelectorAll("[data-caption] > *"),
-        { yPercent: 110 },
+        { yPercent: maskDrop(lang) },
         { yPercent: 0, duration: 1, ease: "power4.out", stagger: 0.05, delay: 0.45 },
       );
     },
@@ -114,7 +115,7 @@ export function Hero() {
     // Scoped to the hero: the manifesto below has its own [data-frame], driven by scroll.
     tl.fromTo(el.querySelector("[data-frame]"), { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.6, ease: "expo.inOut" }, 0.1)
       .fromTo(el.querySelector(`[data-slide="0"] img`), { scale: 1.35 }, { scale: 1.06, duration: 2.4, ease: "expo.out" }, 0.1)
-      .fromTo(el.querySelectorAll("[data-line]"), { yPercent: 105 }, { yPercent: 0, duration: 1.3, ease: "power4.out", stagger: 0.09 }, 0.35)
+      .fromTo(el.querySelectorAll("[data-line]"), { yPercent: maskDrop(lang, 105) }, { yPercent: 0, duration: 1.3, ease: "power4.out", stagger: 0.09 }, 0.35)
       .fromTo(el.querySelectorAll("[data-fade]"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.07 }, 0.8);
     return () => tl.kill();
   });
@@ -160,7 +161,7 @@ export function Hero() {
             <div data-fade className="flex flex-wrap items-center gap-6">
               <Btn to="/contact">{t(hero.cta)}</Btn>
               <TLink to="/projects" className="label link-line text-gypsum/80 hover:text-gypsum">
-                {t(ui.allProjects)} →
+                {t(ui.allProjects)} <TextArrow />
               </TLink>
             </div>
             <div data-fade className="hidden lg:block">
@@ -205,10 +206,10 @@ export function Hero() {
           <div className="mt-5 w-full lg:w-[min(100%,calc((100svh-var(--header-h)-9rem)*0.8))]" aria-live="polite">
             <div className="flex items-end justify-between gap-6">
               <div className="min-w-0">
-                <span data-caption className="block overflow-hidden">
+                <span data-caption className="mask-line block overflow-hidden">
                   <span className="label block text-ochre">{current?.label}</span>
                 </span>
-                <span data-caption className="mt-1.5 block overflow-hidden">
+                <span data-caption className="mask-line mt-1.5 block overflow-hidden">
                   <span className="mega mega-sm block truncate">{current?.name}</span>
                 </span>
               </div>

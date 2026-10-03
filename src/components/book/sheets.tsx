@@ -7,7 +7,7 @@ import { Mark } from "@/components/brand/logo";
 import { plain } from "@/components/ui/rich";
 import type { BookPage } from "@/lib/book";
 import type { Project, SiteContent, Settings, TeamMember } from "@/lib/content/types";
-import type { L, Locale } from "@/lib/i18n";
+import { comma, type L, type Locale } from "@/lib/i18n";
 import { ui } from "@/lib/dict";
 
 export type Side = "left" | "right";
@@ -37,12 +37,14 @@ const JEDDAH: L = { en: "Jeddah", ar: "جدة" };
  * Type inside a page is sized in container units, so it scales with the page
  * rather than the window. The minimums are set for a single page on a phone,
  * where the page is the whole reading surface and has to stay legible.
+ * The small sizes suit tracked Latin capitals; Arabic at the same size reads
+ * a step smaller, so it gets its own.
  */
 const T = {
-  micro: "text-[clamp(0.56rem,1.8cqw,0.66rem)]",
-  label: "text-[clamp(0.6rem,2cqw,0.72rem)]",
-  small: "text-[clamp(0.64rem,2.1cqw,0.76rem)]",
-  body: "text-[clamp(0.72rem,2.55cqw,0.9rem)]",
+  micro: "text-[clamp(0.56rem,1.8cqw,0.66rem)] rtl:text-[clamp(0.68rem,2.1cqw,0.8rem)]",
+  label: "text-[clamp(0.6rem,2cqw,0.72rem)] rtl:text-[clamp(0.7rem,2.3cqw,0.84rem)]",
+  small: "text-[clamp(0.64rem,2.1cqw,0.76rem)] rtl:text-[clamp(0.72rem,2.4cqw,0.88rem)]",
+  body: "text-[clamp(0.72rem,2.55cqw,0.9rem)] rtl:text-[clamp(0.8rem,2.8cqw,1rem)]",
   lead: "text-[clamp(1.05rem,5.2cqw,1.8rem)]",
   title: "text-[clamp(1.5rem,8cqw,2.9rem)]",
   numeral: "text-[clamp(1.9rem,11cqw,3.8rem)]",
@@ -371,10 +373,10 @@ function GridSheet({ page, side, eager, c }: { page: Extract<BookPage, { kind: "
 function ColophonSheet({ page, side, c }: { page: Extract<BookPage, { kind: "colophon" }>; side: Side; c: BookCtx }) {
   const team = [...c.team].sort((x, y) => x.order - y.order);
   const rows: [string, string][] = [
-    [c.t(ui.book.publishedBy), `${c.t(c.settings.companyName)}, ${c.t(JEDDAH)}`],
+    [c.t(ui.book.publishedBy), `${c.t(c.settings.companyName)}${comma(c.lang)}${c.t(JEDDAH)}`],
     ...(team.length ? ([[c.t(ui.team), team.map((m) => c.t(m.name)).join(" · ")]] as [string, string][]) : []),
     [c.t(ui.book.typefaces), c.lang === "ar" ? "Markazi Text, IBM Plex Sans Arabic" : "Instrument Serif, Archivo, IBM Plex Mono"],
-    [c.t(ui.book.edition), `${c.t(ui.book.volume)}, ${c.n("2026")}`],
+    [c.t(ui.book.edition), `${c.t(ui.book.volume)}${comma(c.lang)}${c.n("2026")}`],
   ];
   return (
     <Paper>

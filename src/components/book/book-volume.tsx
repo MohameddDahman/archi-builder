@@ -555,7 +555,7 @@ export function BookVolume({ pages, ctx }: Props) {
                     ) : (
                       <span aria-hidden="true" className="book-paper absolute inset-0" />
                     )}
-                    <span aria-hidden="true" className="relative z-10 w-full bg-gradient-to-t from-[#0f0e0d]/75 to-transparent px-1.5 pb-1 pt-4 text-start font-mono text-[0.55rem] uppercase tracking-[0.1em] text-[#f3eee6]">
+                    <span aria-hidden="true" className="relative z-10 w-full bg-gradient-to-t from-[#0f0e0d]/75 to-transparent px-1.5 pb-1 pt-4 truncate text-start font-mono text-[0.55rem] uppercase tracking-[0.1em] text-[#f3eee6] rtl:text-[0.7rem] rtl:leading-snug">
                       {s.label}
                     </span>
                   </button>

@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, ScrollTrigger, prefersReducedMotion, maskDrop } from "@/lib/gsap";
 import { useUi } from "@/lib/ui-store";
 import { useLenis } from "./smooth-scroll";
 import { useLocale } from "./locale";
@@ -22,7 +22,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   const router = useRouter();
   const pathname = usePathname();
   const lenis = useLenis();
-  const { t, dir } = useLocale();
+  const { t, dir, lang } = useLocale();
   const shell = useRef<HTMLDivElement>(null);
   const pending = useRef<string | null>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
@@ -73,12 +73,12 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         .to("#main", { scale: 0.97, opacity: 0.6, duration: 0.8, ease: "power2.inOut" }, 0)
         .fromTo(
           el.querySelectorAll("[data-meta]"),
-          { yPercent: 110 },
+          { yPercent: maskDrop(lang) },
           { yPercent: 0, duration: 0.7, ease: "power4.out", stagger: 0.06 },
           0.45,
         );
     },
-    [pathname, router, lenis, titleFor, dir],
+    [pathname, router, lenis, titleFor, dir, lang],
   );
 
   // New route rendered: reset scroll, then swing the louvres open.
@@ -97,7 +97,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
       tl.current?.kill();
       tl.current = gsap
         .timeline({ delay: 0.12 })
-        .to(el.querySelectorAll("[data-meta]"), { yPercent: -110, duration: 0.45, ease: "power3.in" })
+        .to(el.querySelectorAll("[data-meta]"), { yPercent: -maskDrop(lang), duration: 0.45, ease: "power3.in" })
         .to(
           boards,
           { rotationY: -90, duration: 0.9, ease: "power3.inOut", stagger: { each: 0.035, from: dir === "rtl" ? "end" : "start" } },
@@ -107,7 +107,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         .to(el, { opacity: 0, duration: 0.2 }, "-=0.25")
         .set(el, { visibility: "hidden" });
     });
-  }, [pathname, lenis, dir]);
+  }, [pathname, lenis, dir, lang]);
 
   return (
     <TransitionContext.Provider value={{ navigate }}>
@@ -125,7 +125,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
               <Mark className="h-12 w-auto" />
             </div>
           </div>
-          <div className="overflow-hidden px-6 text-center">
+          <div className="mask-line overflow-hidden px-6 text-center">
             <div data-meta className="mega mega-md">
               {title}
             </div>

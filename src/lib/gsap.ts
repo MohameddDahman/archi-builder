@@ -15,4 +15,11 @@ export const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/**
+ * How far (yPercent) a masked line drops out of sight. Arabic marks reach past
+ * the line box and Arabic masks clip a box grown around it (globals.css), so
+ * Arabic lines start lower or their hamzas and shaddas peek out early.
+ */
+export const maskDrop = (lang: string, base = 110) => (lang === "ar" ? 150 : base);
+
 export { gsap, ScrollTrigger, SplitText, useGSAP };

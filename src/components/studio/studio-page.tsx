@@ -123,7 +123,8 @@ function Values() {
             <article className="chamfer chamfer-lg grid min-h-[62svh] origin-top overflow-hidden bg-deep-2 md:grid-cols-12">
               <div className="flex flex-col justify-between gap-10 p-8 md:col-span-7 md:p-12">
                 <span className="font-mono text-xs text-mist">
-                  V·{n(String(i + 1).padStart(2, "0"))} / {n(String(values.length).padStart(2, "0"))}
+                  <span className="rtl:hidden">V·</span>
+                  {n(String(i + 1).padStart(2, "0"))} / {n(String(values.length).padStart(2, "0"))}
                 </span>
                 <div>
                   <h3 className="mega mega-md text-ochre">{t(v.title)}</h3>

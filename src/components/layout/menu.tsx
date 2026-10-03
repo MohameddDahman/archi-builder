@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { gsap, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, prefersReducedMotion, maskDrop } from "@/lib/gsap";
 import { useUi } from "@/lib/ui-store";
 import { useLocale } from "@/components/providers/locale";
 import { useLenis } from "@/components/providers/smooth-scroll";
@@ -19,7 +19,7 @@ import { navItems, ui } from "@/lib/dict";
 export function Menu() {
   const open = useUi((s) => s.menuOpen);
   const setUi = useUi((s) => s.set);
-  const { t, n, dir } = useLocale();
+  const { t, n, dir, lang } = useLocale();
   const lenis = useLenis();
   const settings = useSite((s) => s.settings);
   const root = useRef<HTMLDivElement>(null);
@@ -68,7 +68,7 @@ export function Menu() {
           .to(state, { [lead]: 100, duration: 0.9, ease: "power3.inOut", onUpdate: draw }, 0)
           .to(state, { [trail]: 100, duration: 0.9, ease: "power3.inOut", onUpdate: draw }, 0.16)
           .to(line, { opacity: 0, duration: 0.3 }, 0.85)
-          .fromTo(items, { yPercent: 115 }, { yPercent: 0, duration: 1.05, ease: "power4.out", stagger: 0.055 }, 0.5)
+          .fromTo(items, { yPercent: maskDrop(lang, 115) }, { yPercent: 0, duration: 1.05, ease: "power4.out", stagger: 0.055 }, 0.5)
           .fromTo(rules, { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "expo.out", stagger: 0.055 }, 0.58)
           .fromTo(extras, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.07 }, 0.75);
         if (plate) tl.fromTo(plate, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.2, ease: "expo.inOut" }, 0.55);
@@ -102,7 +102,7 @@ export function Menu() {
     return () => {
       tl.kill();
     };
-  }, [open, lenis, setUi, dir]);
+  }, [open, lenis, setUi, dir, lang]);
 
   return (
     <div

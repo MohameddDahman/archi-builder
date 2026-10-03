@@ -8,10 +8,11 @@ import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { useLocale } from "@/components/providers/locale";
 import { useSite, publishedProjects } from "@/lib/content/store";
 import { ui } from "@/lib/dict";
+import { comma, counted } from "@/lib/i18n";
 import { TLink } from "@/components/ui/tlink";
 import { Rich } from "@/components/ui/rich";
 import { Counter, Reveal, RevealText } from "@/components/ui/motion";
-import { Axis, Btn, Scramble } from "@/components/ui/primitives";
+import { Axis, Btn, Scramble, TextArrow } from "@/components/ui/primitives";
 import { PlanSvg } from "@/components/house/plan-svg";
 import { ClosedBook } from "@/components/book/closed-book";
 import type { Project } from "@/lib/content/types";
@@ -23,7 +24,7 @@ const SCALE_STEPS = [100, 50, 20, 10, 5, 2, 1];
    bleed while the scale counts down to 1:1 — the logo, acted out.
 ------------------------------------------------------------------ */
 export function Manifesto() {
-  const { t, n } = useLocale();
+  const { t, n, lang } = useLocale();
   const about = useSite((s) => s.content.about);
   const counts = useSite(
     useShallow((s) => [publishedProjects(s.projects).length, s.content.services.length, s.content.sectors.length, s.content.process.length]),
@@ -112,7 +113,7 @@ export function Manifesto() {
         <Reveal as="dl" className="mt-24 grid grid-cols-2 lg:grid-cols-4" stagger={0.1}>
           {ui.facts.map((f, i) => (
             <div key={i} className="flex flex-col-reverse border-t hair py-7 pe-6">
-              <dt className="label mt-4 text-mist">{t(f)}</dt>
+              <dt className="label mt-4 text-mist">{counted(f, counts[i], lang)}</dt>
               <dd className="mega mega-lg">
                 <Counter value={counts[i]} />
               </dd>
@@ -136,7 +137,7 @@ function FilmCard({ p, i }: { p: Project; i: number }) {
           <div data-card-img className="absolute inset-[-8%]">
             <Image
               src={p.cover}
-              alt={`${lang === "ar" ? p.nameAr : p.name}, ${t(p.type)}`}
+              alt={`${lang === "ar" ? p.nameAr : p.name}${comma(lang)}${t(p.type)}`}
               fill
               sizes="(min-width:1024px) 32vw, 100vw"
               className="object-cover transition-transform duration-[1.6s] ease-[var(--ease-out-expo)] group-hover:scale-[1.07]"
@@ -281,7 +282,7 @@ export function BuildTeaser() {
               />
               <PlanSvg className="absolute inset-[5%] h-[90%] w-[90%] transition-transform duration-[1.4s] ease-[var(--ease-out-expo)] group-hover:scale-[1.03]" />
               <span className="label chamfer absolute bottom-4 end-4 translate-y-3 bg-ochre px-4 py-2.5 text-ink opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                {t(ui.enterBuild)} →
+                {t(ui.enterBuild)} <TextArrow />
               </span>
             </div>
           </TLink>
@@ -338,7 +339,8 @@ export function Scope() {
                 className="grid w-full grid-cols-[3rem_1fr_auto] items-center gap-4 py-6 text-start md:grid-cols-[5rem_1fr_auto]"
               >
                 <span className={clsx("font-mono text-xs transition-colors", active ? "text-ochre" : "text-mist")}>
-                  S·{n(String(i + 1).padStart(2, "0"))}
+                  <span className="rtl:hidden">S·</span>
+                  {n(String(i + 1).padStart(2, "0"))}
                 </span>
                 <span className={clsx("mega mega-sm transition-colors duration-500", active ? "text-gypsum" : "text-gypsum/45")}>{t(s.title)}</span>
                 <span
@@ -360,7 +362,7 @@ export function Scope() {
                     <div className="flex flex-col justify-between gap-6">
                       <p className="lead max-w-md text-gypsum/75">{t(s.body)}</p>
                       <TLink to={`/services#${s.key}`} className="label link-line self-start text-ochre">
-                        {t(ui.allServices)} →
+                        {t(ui.allServices)} <TextArrow />
                       </TLink>
                     </div>
                     <div className="chamfer relative aspect-[16/9] overflow-hidden bg-deep-3">

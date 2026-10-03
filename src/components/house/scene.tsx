@@ -365,8 +365,8 @@ function Drawing({ lang, night }: { lang: Locale; night: React.RefObject<HTMLDiv
         return (
           <Html key={r.id} position={[r.label[0], 0, r.label[1]]} center zIndexRange={[20, 0]}>
             <div ref={(el) => void (labels.current[idx] = el)} className={labelCls} style={{ opacity: 0 }}>
-              <div className="label !text-[0.62rem]">{lang === "ar" ? r.name.ar : r.name.en}</div>
-              <div className="font-mono text-[0.6rem] opacity-60">
+              <div className="label ltr:!text-[0.62rem] rtl:!text-[0.74rem]">{lang === "ar" ? r.name.ar : r.name.en}</div>
+              <div className="font-mono text-[0.6rem] opacity-60 rtl:text-[0.7rem]">
                 {n(areaOf(r.rect).toFixed(1))} {areaUnit}
               </div>
             </div>
@@ -375,7 +375,7 @@ function Drawing({ lang, night }: { lang: Locale; night: React.RefObject<HTMLDiv
       })}
       <Html position={[terrace.label[0], 0, terrace.label[1]]} center zIndexRange={[20, 0]}>
         <div ref={(el) => void (labels.current[li] = el)} className={labelCls} style={{ opacity: 0 }}>
-          <div className="label !text-[0.62rem]">{lang === "ar" ? terrace.name.ar : terrace.name.en}</div>
+          <div className="label ltr:!text-[0.62rem] rtl:!text-[0.74rem]">{lang === "ar" ? terrace.name.ar : terrace.name.en}</div>
         </div>
       </Html>
       {gridX.map((x, i) => (
@@ -396,7 +396,7 @@ function Drawing({ lang, night }: { lang: Locale; night: React.RefObject<HTMLDiv
         const idx = di++;
         return (
           <Html key={`d${s.at.join()}`} position={[s.at[0], 0, s.at[1]]} center zIndexRange={[20, 0]}>
-            <div ref={(el) => void (dims.current[idx] = el)} className={`${outerCls} font-mono text-[0.6rem]`} style={{ opacity: 0 }}>
+            <div ref={(el) => void (dims.current[idx] = el)} className={`${outerCls} font-mono text-[0.6rem] rtl:text-[0.7rem]`} style={{ opacity: 0 }}>
               {s.text}
             </div>
           </Html>

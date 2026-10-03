@@ -4,15 +4,16 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, X } from "@phosphor-icons/react";
-import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, useGSAP, prefersReducedMotion, maskDrop } from "@/lib/gsap";
 import { useIntro } from "@/lib/ui-store";
 import { useLocale } from "@/components/providers/locale";
 import { useLenis } from "@/components/providers/smooth-scroll";
 import { useSite, publishedProjects } from "@/lib/content/store";
 import { ui } from "@/lib/dict";
+import { comma } from "@/lib/i18n";
 import { TLink } from "@/components/ui/tlink";
 import { FrameImage, Reveal, RevealText } from "@/components/ui/motion";
-import { Axis, Btn, Scramble } from "@/components/ui/primitives";
+import { Axis, Btn, Scramble, TextArrow } from "@/components/ui/primitives";
 import type { Project } from "@/lib/content/types";
 
 export function ProjectDetail({ slug }: { slug: string }) {
@@ -60,7 +61,7 @@ function Detail({ p, i, next }: { p: Project; i: number; next: Project }) {
       { clipPath: "inset(0% 0% 0% 0%)", duration: 1.7, ease: "expo.inOut" },
       0,
     )
-      .fromTo(el.querySelectorAll("[data-name]"), { yPercent: 105 }, { yPercent: 0, duration: 1.3, ease: "power4.out" }, 0.5)
+      .fromTo(el.querySelectorAll("[data-name]"), { yPercent: maskDrop(lang, 105) }, { yPercent: 0, duration: 1.3, ease: "power4.out" }, 0.5)
       .fromTo(el.querySelectorAll("[data-fade]"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.07 }, 0.8);
     return () => tl.kill();
   });
@@ -91,7 +92,7 @@ function Detail({ p, i, next }: { p: Project; i: number; next: Project }) {
       <section ref={root} className="relative h-svh min-h-[620px] overflow-hidden">
         <div data-cover-frame className="absolute inset-0 overflow-hidden">
           <div data-cover className="absolute inset-0">
-            <Image src={p.cover} alt={`${name}, ${t(p.type)}`} fill preload sizes="100vw" quality={85} className="object-cover" />
+            <Image src={p.cover} alt={`${name}${comma(lang)}${t(p.type)}`} fill preload sizes="100vw" quality={85} className="object-cover" />
             <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(10_10_10/0.92),rgb(10_10_10/0.15)_55%,rgb(10_10_10/0.5))]" />
           </div>
         </div>
@@ -101,10 +102,10 @@ function Detail({ p, i, next }: { p: Project; i: number; next: Project }) {
               {t(ui.nav.projects)}
             </Axis>
             <TLink to="/projects" className="link-line">
-              ← {t(ui.allProjects)}
+              <TextArrow to="back" /> {t(ui.allProjects)}
             </TLink>
           </div>
-          <h1 className="mega mega-xl overflow-hidden">
+          <h1 className="mask-line mega mega-xl overflow-hidden">
             <span data-name className="block">
               {name}
             </span>
@@ -147,7 +148,7 @@ function Detail({ p, i, next }: { p: Project; i: number; next: Project }) {
               {t(p.summary)}
             </RevealText>
             <Reveal className="mt-10">
-              <Scramble text={`P-${String(i + 1).padStart(2, "0")} / ${p.slug.toUpperCase()}`} className="label text-mist" />
+              <Scramble text={lang === "ar" ? `${n(String(i + 1).padStart(2, "0"))} / ${p.nameAr}` : `P-${String(i + 1).padStart(2, "0")} / ${p.slug.toUpperCase()}`} className="label text-mist" />
             </Reveal>
           </div>
         </div>
@@ -267,7 +268,7 @@ function NextProject({ p }: { p: Project }) {
   return (
     <section className="px-[var(--gutter)] py-[var(--bay)]">
       <TLink to={`/projects/${p.slug}`} className="group block">
-        <span className="label text-ochre">{t(ui.nextProject)} →</span>
+        <span className="label text-ochre">{t(ui.nextProject)} <TextArrow /></span>
         <div className="mt-6 grid items-end gap-8 lg:grid-cols-12">
           <h2 className="mega mega-lg transition-colors duration-500 group-hover:text-ochre lg:col-span-7">{lang === "ar" ? p.nameAr : p.name}</h2>
           <div className="chamfer chamfer-lg relative aspect-[16/10] overflow-hidden lg:col-span-5">

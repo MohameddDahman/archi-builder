@@ -2,6 +2,7 @@
 
 import { useLocale } from "@/components/providers/locale";
 import { ui } from "@/lib/dict";
+import { counted } from "@/lib/i18n";
 import { PageHero } from "@/components/ui/page-hero";
 import { Reveal, RevealText } from "@/components/ui/motion";
 import { Rich } from "@/components/ui/rich";
@@ -23,7 +24,7 @@ export function BookPage() {
     <>
       <PageHero name={t(ui.bookLabel)} title={t(ui.book.title)} lead={t(ui.book.lead)} index="04">
         <p className="label text-gypsum/45">
-          {figure({ lang, n }, projects.length, 2)} {t(ui.book.projects)} · {n(pages.length)} {t(ui.book.pages)}
+          {figure({ lang, n }, projects.length, 2)} {counted(ui.book.projects, projects.length, lang)} · {n(pages.length)} {counted(ui.book.pages, pages.length, lang)}
         </p>
       </PageHero>
 
@@ -50,7 +51,7 @@ export function BookPage() {
                   {t(ui.book.download)}
                 </BtnA>
                 <p className="label text-gypsum/45">
-                  PDF · {n(copy.pages)} {t(ui.book.pages)} · {n((copy.bytes / 1024 / 1024).toFixed(1))} MB
+                  PDF · {n(copy.pages)} {counted(ui.book.pages, copy.pages, lang)} · {n((copy.bytes / 1024 / 1024).toFixed(1))} {t(ui.book.megabytes)}
                 </p>
               </div>
             </Reveal>

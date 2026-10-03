@@ -174,7 +174,7 @@ export function HouseExperience({ length = 620 }: { length?: number }) {
                 <span className="chamfer relative block h-11 w-11 overflow-hidden [--chamfer:8px]">
                   <Image src={`/house/textures/${s.id}_diff.webp`} alt="" fill sizes="44px" className="object-cover" />
                 </span>
-                <span className="label !text-[0.58rem] !tracking-[0.08em] opacity-70">{t(s.name)}</span>
+                <span className="label opacity-70 ltr:!text-[0.58rem] ltr:!tracking-[0.08em] rtl:!text-[0.72rem]">{t(s.name)}</span>
               </li>
             ))}
           </ul>

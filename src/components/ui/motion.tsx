@@ -3,7 +3,7 @@
 import Image, { type ImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { gsap, ScrollTrigger, SplitText, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, ScrollTrigger, SplitText, useGSAP, prefersReducedMotion, maskDrop } from "@/lib/gsap";
 import { useIntro } from "@/lib/ui-store";
 import { useLocale } from "@/components/providers/locale";
 
@@ -44,10 +44,10 @@ export function RevealText({
         autoSplit: true,
         onSplit(self) {
           if (intro) {
-            if (!played.current) gsap.set(self.lines, { yPercent: 110 });
+            if (!played.current) gsap.set(self.lines, { yPercent: maskDrop(lang) });
             return;
           }
-          gsap.set(self.lines, { yPercent: 110 });
+          gsap.set(self.lines, { yPercent: maskDrop(lang) });
           return gsap.to(self.lines, {
             yPercent: 0,
             duration: 1.2,

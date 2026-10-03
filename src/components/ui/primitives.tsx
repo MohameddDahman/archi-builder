@@ -10,21 +10,47 @@ import { TLink } from "./tlink";
 /* ------------------------------------------------------------------
    Section marker: a structural-grid bubble, like the axes on a plan.
 ------------------------------------------------------------------ */
+/** Arabic outlines count in abjad order: أ ب ج د هـ و ز ح. */
+const ABJAD: Record<string, string> = { A: "أ", B: "ب", C: "ج", D: "د", E: "هـ", F: "و", G: "ز", H: "ح" };
+
 export function Axis({ letter, children, className }: { letter?: string; children: React.ReactNode; className?: string }) {
+  const { lang } = useLocale();
   return (
     <div className={clsx("label flex items-center gap-3", className)}>
       {letter ? (
         <span
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-current font-mono text-[0.68rem] tracking-normal"
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-current font-mono text-[0.68rem] tracking-normal rtl:text-[0.8rem]"
           aria-hidden="true"
         >
-          {letter}
+          {lang === "ar" ? (ABJAD[letter] ?? letter) : letter}
         </span>
       ) : (
         <Slab />
       )}
       <span>{children}</span>
     </div>
+  );
+}
+
+/**
+ * Arrows after link text, drawn rather than typed: none of the site's fonts
+ * has → or ↗, so the browser borrowed them from Arial or Segoe UI Symbol.
+ * They point the way the text reads.
+ */
+export function TextArrow({ to = "forward", className }: { to?: "forward" | "back" | "out"; className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      strokeWidth={1.3}
+      className={clsx(
+        "inline-block h-[1em] w-[1em] shrink-0 fill-none stroke-current align-[-0.15em]",
+        to === "back" ? "ltr:-scale-x-100" : "rtl:-scale-x-100",
+        className,
+      )}
+    >
+      {to === "out" ? <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" /> : <path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" />}
+    </svg>
   );
 }
 

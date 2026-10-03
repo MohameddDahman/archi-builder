@@ -7,7 +7,7 @@ import { useLocale } from "@/components/providers/locale";
 import { useSite } from "@/lib/content/store";
 import { ui } from "@/lib/dict";
 import { PageHero } from "@/components/ui/page-hero";
-import { Axis, BtnButton, BtnA } from "@/components/ui/primitives";
+import { Axis, BtnButton, BtnA, TextArrow } from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/motion";
 
 type Fields = { name: string; phone: string; email: string; projectType: string; message: string };
@@ -208,7 +208,7 @@ function Details() {
         </p>
         <address className="statement-sm not-italic">{t(settings.address)}</address>
         <a href={mapHref} target="_blank" rel="noreferrer" className="label link-line mt-3 inline-block text-ochre">
-          {t(ui.directions)} ↗
+          {t(ui.directions)} <TextArrow to="out" />
         </a>
       </div>
       <div>

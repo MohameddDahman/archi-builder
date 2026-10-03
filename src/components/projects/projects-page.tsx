@@ -9,6 +9,7 @@ import { gsap, prefersReducedMotion } from "@/lib/gsap";
 import { useLocale } from "@/components/providers/locale";
 import { useSite, publishedProjects } from "@/lib/content/store";
 import { ui } from "@/lib/dict";
+import { comma } from "@/lib/i18n";
 import { PageHero } from "@/components/ui/page-hero";
 import { TLink } from "@/components/ui/tlink";
 import type { Project, Sector } from "@/lib/content/types";
@@ -89,7 +90,7 @@ export function ProjectsPage() {
                   )}
                 >
                   {s === "all" ? t(ui.filterAll) : t(ui.sectorNames[s])}
-                  <span className="opacity-60">{n(count)}</span>
+                  <span className="opacity-75">{n(count)}</span>
                 </button>
               );
             })}
@@ -144,7 +145,7 @@ function GridCard({ p, i }: { p: Project; i: number }) {
         <div className="chamfer chamfer-lg relative aspect-[4/5] overflow-hidden bg-deep-3">
           <Image
             src={p.cover}
-            alt={`${lang === "ar" ? p.nameAr : p.name}, ${t(p.type)}`}
+            alt={`${lang === "ar" ? p.nameAr : p.name}${comma(lang)}${t(p.type)}`}
             fill
             sizes="(min-width:768px) 50vw, 100vw"
             className="object-cover transition-transform duration-[1.6s] ease-[var(--ease-out-expo)] group-hover:scale-[1.06]"

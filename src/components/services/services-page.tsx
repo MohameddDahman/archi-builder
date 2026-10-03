@@ -105,7 +105,7 @@ function ServiceChapters() {
                       active === i ? "border-ochre text-gypsum" : "border-white/10 text-gypsum/45 hover:text-gypsum/80",
                     )}
                   >
-                    <span className="font-mono text-[0.68rem]">S·{n(String(i + 1).padStart(2, "0"))}</span>
+                    <span className="font-mono text-[0.68rem] rtl:text-[0.8rem]"><span className="rtl:hidden">S·</span>{n(String(i + 1).padStart(2, "0"))}</span>
                     <span className="font-medium">{t(s.title)}</span>
                   </a>
                 </li>
@@ -126,7 +126,7 @@ function ServiceChapters() {
             >
               <FrameImage src={s.image} alt="" fill sizes="(min-width:1024px) 60vw, 100vw" className="chamfer chamfer-lg aspect-[16/10]" />
               <div className="mt-10 grid gap-6 md:grid-cols-12">
-                <span className="font-mono text-xs text-ochre md:col-span-1">S·{n(String(i + 1).padStart(2, "0"))}</span>
+                <span className="font-mono text-xs text-ochre md:col-span-1"><span className="rtl:hidden">S·</span>{n(String(i + 1).padStart(2, "0"))}</span>
                 <RevealText as="h2" className="mega mega-md md:col-span-6">
                   {t(s.title)}
                 </RevealText>
@@ -172,8 +172,8 @@ function Sectors() {
             onPointerEnter={() => setOpen(i)}
             onFocus={() => setOpen(i)}
             className={clsx(
-              "chamfer chamfer-lg group relative h-[62svh] overflow-hidden text-start text-gypsum transition-[flex-grow] duration-[1.1s] ease-[var(--ease-out-expo)] md:h-auto",
-              open === i ? "md:grow-[3.2]" : "md:grow",
+              "chamfer chamfer-lg group @container relative h-[62svh] overflow-hidden text-start text-gypsum transition-[flex-grow] duration-[1.1s] ease-[var(--ease-out-expo)] md:h-auto",
+              open === i ? "md:grow-[2] lg:grow-[3.2]" : "md:grow",
             )}
             style={{ flexBasis: 0 }}
           >
@@ -185,12 +185,12 @@ function Sectors() {
               className={clsx("object-cover transition-all duration-[1.2s] ease-[var(--ease-out-expo)]", open === i ? "scale-100" : "scale-110 brightness-[.5] grayscale")}
             />
             <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(10_10_10/0.9),rgb(10_10_10/0.1)_55%,transparent)]" />
-            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-6 md:p-9">
+            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-6 lg:p-9">
               <span className="font-mono text-xs text-ochre">{n(String(i + 1).padStart(2, "0"))}</span>
-              <h3 className="mega mega-md">{t(s.title)}</h3>
+              <h3 className="mega text-[clamp(1rem,8.5cqw,2.5rem)]">{t(s.title)}</h3>
               <ul className={clsx("flex flex-wrap gap-2 transition-all duration-700", open === i ? "opacity-100" : "md:translate-y-4 md:opacity-0")}>
                 {s.items.map((it) => (
-                  <li key={it.en} className="label chamfer bg-white/10 px-3.5 py-2 backdrop-blur-sm">
+                  <li key={it.en} className="label chamfer bg-white/10 px-3.5 py-2 backdrop-blur-sm [--chamfer:8px]">
                     {t(it)}
                   </li>
                 ))}

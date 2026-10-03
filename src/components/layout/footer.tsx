@@ -7,7 +7,7 @@ import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { useLocale } from "@/components/providers/locale";
 import { useLenis } from "@/components/providers/smooth-scroll";
 import { TLink } from "@/components/ui/tlink";
-import { Btn, BtnA, Scramble, Slab } from "@/components/ui/primitives";
+import { Btn, BtnA, Scramble, Slab, TextArrow } from "@/components/ui/primitives";
 import { RevealText } from "@/components/ui/motion";
 import { Rich } from "@/components/ui/rich";
 import { Logo } from "@/components/brand/logo";
@@ -88,7 +88,7 @@ export function Footer() {
           <p className="label mb-5 text-mist">{t(ui.visit)}</p>
           <address className="max-w-[17rem] not-italic text-gypsum/85">{t(settings.address)}</address>
           <a href={mapHref} target="_blank" rel="noreferrer" className="label link-line mt-4 inline-flex items-center gap-2 text-ochre">
-            <Scramble text={settings.coordinates} /> ↗
+            <Scramble text={settings.coordinates} /> <TextArrow to="out" />
           </a>
         </div>
         <div>
@@ -116,7 +116,7 @@ export function Footer() {
             {navItems.map((item, i) => (
               <li key={item.key}>
                 <TLink to={item.path} className="group inline-flex items-baseline gap-2 text-gypsum/85 hover:text-gypsum">
-                  <span className="font-mono text-[0.62rem] text-gypsum/40 group-hover:text-ochre">{n(String(i + 1).padStart(2, "0"))}</span>
+                  <span className="font-mono text-[0.68rem] text-gypsum/45 group-hover:text-ochre rtl:text-[0.78rem]">{n(String(i + 1).padStart(2, "0"))}</span>
                   <span className="link-line">{t(ui.nav[item.key])}</span>
                 </TLink>
               </li>

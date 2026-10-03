@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, useGSAP, prefersReducedMotion, maskDrop } from "@/lib/gsap";
 import { useIntro } from "@/lib/ui-store";
 import { useLocale } from "@/components/providers/locale";
 import { useSite } from "@/lib/content/store";
@@ -25,13 +25,14 @@ type Props = {
 /** Opening of every inner page: the page name in monumental capitals, a statement, and a chamfered plate. */
 export function PageHero({ name, title, lead, image, imageAlt = "", index, children }: Props) {
   const ref = useRef<HTMLElement>(null);
-  const { n } = useLocale();
+  const { t, n, lang } = useLocale();
   const coords = useSite((s) => s.settings.coordinates);
+  const company = useSite((s) => s.settings.companyName);
 
   useIntro(() => {
     if (!ref.current || prefersReducedMotion()) return;
     const tl = gsap.timeline({ delay: 0.05 });
-    tl.fromTo(ref.current.querySelectorAll("[data-name]"), { yPercent: 105 }, { yPercent: 0, duration: 1.3, ease: "power4.out", stagger: 0.08 })
+    tl.fromTo(ref.current.querySelectorAll("[data-name]"), { yPercent: maskDrop(lang, 105) }, { yPercent: 0, duration: 1.3, ease: "power4.out", stagger: 0.08 })
       .fromTo(ref.current.querySelectorAll("[data-hero-fade]"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.08 }, 0.35);
     const plate = ref.current.querySelector("[data-plate]");
     if (plate)
@@ -59,11 +60,11 @@ export function PageHero({ name, title, lead, image, imageAlt = "", index, child
         <div data-hero-fade className="label mb-6 flex items-center justify-between gap-6 text-gypsum/70">
           <span className="flex items-center gap-3">
             <Slab />
-            {index ? `${n(index)} — ` : ""}Archi Builder
+            {index ? `${n(index)} — ` : ""}{t(company)}
           </span>
           <Scramble text={coords} intro className="hidden sm:inline" />
         </div>
-        <h1 className="mega mega-xl overflow-hidden">
+        <h1 className="mask-line mega mega-xl overflow-hidden">
           <span data-name className="block">
             {name}
           </span>

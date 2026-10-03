@@ -43,6 +43,15 @@
 [dir="rtl"] {
   --sans-face: var(--font-plex-arabic), var(--font-archivo), sans-serif;
   --display-face: var(--font-alexandria), var(--font-archivo), sans-serif;
+  /* Plex Mono has no Arabic, and its fallback face is Arial scaled to 135%:
+     in Arabic, "mono" text (Arabic-Indic figures, words) uses the UI face. */
+  --font-mono: var(--font-plex-arabic), var(--font-plex-mono), ui-monospace, monospace;
+}
+/* Tracking pulls Arabic letters apart and breaks their joins: no Arabic text
+   is tracked. By language, not direction: the book's pages sit inside an LTR
+   flip mount and carry their own lang. */
+:is(.label, [class*="tracking-"]):lang(ar) {
+  letter-spacing: 0 !important;
 }
 
 html {
@@ -144,6 +153,12 @@ em.accent,
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+/* Foil is painted only inside an inline box's content area. Arabic tails
+   (ن ى م ع) and marks reach past it and came out sliced flat; vertical padding
+   on an inline grows the painted area without moving a line. */
+[dir="rtl"] :is(.mega, .statement, .statement-sm) em {
+  padding-block: 0.32em;
+}
 .gold-fill {
   background: var(--gold);
   background-size: 200% 100%;
@@ -155,16 +170,21 @@ em.accent,
   background-position: 100% 0%;
 }
 
+/* Arabic display: Alexandria at 600 carries the same colour as the extended
+   Latin capitals at 600; Arabic needs more room between lines than Latin caps. */
 [dir="rtl"] .mega {
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0;
-  line-height: 1.12;
+  line-height: 1.28;
+}
+[dir="rtl"] .mega-sm {
+  font-weight: 500;
 }
 [dir="rtl"] .statement,
 [dir="rtl"] .statement-sm {
   letter-spacing: 0;
-  line-height: 1.35;
-  font-weight: 600;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .label {
@@ -197,6 +217,13 @@ em.accent,
 /* ------------------------------------------------------------------
    Shapes: the slanted cut of the 1:1 mark
 ------------------------------------------------------------------ */
+/* The cut belongs to the box that declares it. Inherited, a chip inside a
+   large chamfered card took the card's 36px cut and lost its last letter. */
+@property --chamfer {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 14px;
+}
 .chamfer {
   clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%);
 }
@@ -250,6 +277,19 @@ em.accent,
   overflow: clip;
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
+}
+/* Arabic marks (hamza, shadda, damma) rise above the line box and the tails
+   of ي and ع drop below it: a mask cut to the line shears them off. Arabic
+   masks clip a box grown past the line instead, which moves nothing in the
+   layout; the lines start lower to stay hidden (maskDrop in lib/gsap). */
+[dir="rtl"] :is(.split-line, .split-line-mask, .mask-line) {
+  overflow: visible !important;
+  clip-path: inset(-0.3em -0.2em -0.15em -0.2em);
+}
+/* Truncated Arabic keeps its marks: cut the end of the line, not its top. */
+[dir="rtl"] .truncate {
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .link-line {
@@ -424,6 +464,10 @@ textarea[dir="rtl"] {
 }
 
 /* Foil blocking on the cover: light travels across the lettering. */
+[dir="rtl"] .book-foil {
+  /* foil paints only inside the box, so the box has to hold the whole letter */
+  padding-block: 0.14em;
+}
 .book-foil {
   background-image: linear-gradient(105deg, #a8781a 0%, #e0ab26 32%, #fff1c9 46%, #e0ab26 58%, #94690f 100%);
   background-size: 260% 100%;
